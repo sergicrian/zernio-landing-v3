@@ -1,96 +1,27 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { GridBand } from "@/components/sections/grid-band";
+import { Hero } from "@/components/sections/hero";
+import { Navbar } from "@/components/sections/navbar";
+import { NoMetaApp } from "@/components/sections/no-meta-app";
+import { TrustBar } from "@/components/sections/trust-bar";
+import { WhyZernio } from "@/components/sections/why-zernio";
 
-/**
- * Token verification showcase only. Not a landing page, just one example of each
- * primitive on a cream surface so the design tokens can be checked visually.
- */
 export default function Home() {
   return (
-    <main className="mx-auto w-full max-w-content px-page py-12 md:px-page-desktop">
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold text-burgundy">
-          Zernio design system
-        </h1>
-        <p className="mt-2 text-sm text-charcoal-muted">
-          Primitive showcase for token verification.
-        </p>
-      </header>
-
-      <div className="flex flex-col gap-10">
-        {/* Buttons */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold">Buttons</h2>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button>Connect account</Button>
-            <Button variant="secondary">View docs</Button>
-            <Button variant="soft">Soft</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-            <Button variant="destructive">Delete</Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="sm">Small</Button>
-            <Button size="md">Medium</Button>
-            <Button size="lg">Large</Button>
-            <Button size="xl">Extra large</Button>
-          </div>
-        </section>
-
-        {/* Input */}
-        <section className="flex max-w-sm flex-col gap-4">
-          <h2 className="text-xl font-semibold">Input</h2>
-          <Input placeholder="you@example.com" type="email" />
-        </section>
-
-        {/* Badges */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold">Badges</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge>default</Badge>
-            <Badge variant="soft">soft</Badge>
-            <Badge variant="outline">outline</Badge>
-            <Badge variant="secondary">secondary</Badge>
-            <Badge variant="neutral">neutral</Badge>
-            <Badge variant="success">success</Badge>
-            <Badge variant="info">info</Badge>
-            <Badge variant="warning">warning</Badge>
-            <Badge variant="error">error</Badge>
-          </div>
-        </section>
-
-        {/* Card */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold">Card</h2>
-          <Card className="max-w-md">
-            <CardHeader>
-              <CardTitle>Scheduled post</CardTitle>
-              <CardDescription>
-                Publishes to 3 channels on 2026-07-01 at 09:00 UTC.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-charcoal-muted">
-              Draft saved. Review the request payload before you queue it.
-            </CardContent>
-            <CardFooter className="gap-3">
-              <Button size="sm">Queue post</Button>
-              <Button size="sm" variant="outline">
-                Edit
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      </div>
-    </main>
+    <>
+      <Navbar />
+      {/* pt offsets the 72px fixed navbar */}
+      <main className="px-page pt-[72px] lg:px-page-desktop">
+        {/* Content box: border-x draws the outer left/right rails of the grid */}
+        <div className="mx-auto w-full max-w-content border-x border-cream-muted">
+          <GridBand />
+          <Hero />
+          <TrustBar />
+          <GridBand />
+          <WhyZernio />
+          <GridBand />
+          <NoMetaApp />
+        </div>
+      </main>
+    </>
   );
 }
