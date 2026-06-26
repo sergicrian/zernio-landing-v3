@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+/*
+ * Zernio design system - light theme only, no dark mode (deliberate).
+ * Color custom properties mirror the canonical palette in design.md.
+ */
+:root {
+  --coral: #eb3514;
+  --coral-muted: #e09282;
+  --burgundy: #660202;
+  --burgundy-muted: #a57070;
+  --charcoal: #2d2d2d;
+  --charcoal-muted: #6b6b6b;
+  --cream: #f0efeb;
+  --cream-muted: #d9d8d3;
+  --white: #ffffff;
+}
+
+html {
+  background-color: var(--cream);
+  color: var(--charcoal);
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--cream);
+  color: var(--charcoal);
+}
