@@ -28,22 +28,29 @@ export function FinalCta() {
             "radial-gradient(90% 70% at 50% -5%, var(--coral) 0%, var(--burgundy) 58%)",
         }}
       >
-        {/* Subtle breathing coral glow at the top */}
+        {/* Wide, slow coral glow drifting like light. Oversized (-inset-1/2) and
+            fully transparent at its edges so transforms never reveal a hard edge. */}
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-0 mix-blend-screen"
+          className="pointer-events-none absolute -inset-1/2 mix-blend-screen"
           style={{
             background:
-              "radial-gradient(70% 65% at 50% 10%, var(--coral) 0%, transparent 72%)",
-            transformOrigin: "50% 10%",
+              "radial-gradient(40% 36% at 50% 33%, var(--coral) 0%, transparent 68%)",
+            transformOrigin: "50% 33%",
           }}
           animate={
-            reduce ? undefined : { opacity: [0.4, 1, 0.4], scale: [0.95, 1.12, 0.95] }
+            reduce
+              ? undefined
+              : {
+                  opacity: [0.5, 1, 0.5],
+                  scale: [0.9, 1.3, 0.9],
+                  y: ["-2%", "3%", "-2%"],
+                }
           }
           transition={
             reduce
               ? undefined
-              : { duration: 5, ease: EASE, repeat: Infinity }
+              : { duration: 11, ease: EASE, repeat: Infinity }
           }
         />
 
