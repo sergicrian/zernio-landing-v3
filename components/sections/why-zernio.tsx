@@ -32,7 +32,7 @@ export function WhyZernio() {
   return (
     <section>
       {/* Header */}
-      <div className="flex flex-col items-center gap-5 px-6 py-10 text-center lg:px-10">
+      <div className="flex flex-col items-start gap-5 px-6 py-10 text-left lg:px-10">
         <Button variant="soft" size="sm">
           Why Zernio?
         </Button>

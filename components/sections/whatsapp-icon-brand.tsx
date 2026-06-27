@@ -8,14 +8,12 @@ import { cn } from "@/libs/design-system/cn";
 import whatsappLogo from "@/public/whatsapp-logo.svg";
 
 /**
- * Hero app-icon, Zernio brand version: the original coral->burgundy gradient tile
- * with the WhatsApp glyph, now alive. The gradient drifts very subtly (transform
- * only), and it reuses the white inset bevel + top sheen from the premium icon for
- * depth. Honors prefers-reduced-motion (static gradient).
- *
- * The darker premium variant lives in whatsapp-icon.tsx (kept for reverting).
+ * Hero app-icon: white WhatsApp glyph on a radial brand gradient (light coral up
+ * top, deep burgundy below) with the same subtle breathing glow as the Final CTA.
+ * Animates opacity + transform only; honors prefers-reduced-motion. Colors
+ * reference the system tokens.
  */
-const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1]; // system easing
+const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
 export function WhatsappIconBrand({ className }: { className?: string }) {
   const reduce = useReducedMotion();
@@ -23,48 +21,36 @@ export function WhatsappIconBrand({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative size-16 overflow-hidden rounded-2xl border border-white/15 shadow-[inset_0_1.5px_1px_rgba(255,255,255,0.55),inset_0_-12px_24px_rgba(0,0,0,0.35),inset_0_0_0_1px_rgba(255,255,255,0.04)]",
+        "relative flex size-16 items-center justify-center overflow-hidden rounded-[20px]",
         className,
       )}
+      style={{
+        background:
+          "radial-gradient(90% 70% at 50% -5%, var(--coral) 0%, var(--burgundy) 58%)",
+      }}
     >
-      {/* Animated Zernio brand gradient (oversized layer drifting subtly) */}
+      {/* Subtle breathing coral glow */}
       <motion.div
         aria-hidden
-        className="absolute inset-[-40%] bg-brand-gradient"
+        className="pointer-events-none absolute inset-0 mix-blend-screen"
+        style={{
+          background:
+            "radial-gradient(70% 65% at 50% 10%, var(--coral) 0%, transparent 72%)",
+          transformOrigin: "50% 10%",
+        }}
         animate={
-          reduce
-            ? undefined
-            : { rotate: [-6, 6], x: ["-3%", "3%"], y: ["2%", "-2%"] }
+          reduce ? undefined : { opacity: [0.4, 1, 0.4], scale: [0.95, 1.12, 0.95] }
         }
         transition={
-          reduce
-            ? undefined
-            : {
-                duration: 10,
-                ease: EASE,
-                repeat: Infinity,
-                repeatType: "mirror",
-              }
+          reduce ? undefined : { duration: 5, ease: EASE, repeat: Infinity }
         }
       />
 
-      {/* WhatsApp glyph in relief */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Image
-          src={whatsappLogo}
-          alt="WhatsApp"
-          className="h-8 w-auto drop-shadow-[0_2px_5px_rgba(0,0,0,0.35)]"
-        />
-      </div>
-
-      {/* Static top sheen (glass reflection) */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-1/2"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(255,255,255,0.28), rgba(255,255,255,0.04) 60%, transparent)",
-        }}
+      {/* White WhatsApp glyph */}
+      <Image
+        src={whatsappLogo}
+        alt="WhatsApp"
+        className="relative h-8 w-auto drop-shadow-[0_2px_5px_rgba(0,0,0,0.35)]"
       />
     </div>
   );

@@ -55,6 +55,8 @@ const config: Config = {
           "Courier New",
           "monospace",
         ],
+        // Dashboard UI mockups only (Zernio's product font).
+        geist: ["var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       fontSize: {
         xs: ["0.75rem", { lineHeight: "1rem" }],

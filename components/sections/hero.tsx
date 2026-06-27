@@ -1,9 +1,6 @@
-import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/sections/copy-button";
-
-import whatsappLogo from "@/public/whatsapp-logo.svg";
+import { WhatsappIconBrand } from "@/components/sections/whatsapp-icon-brand";
 
 /**
  * Hero (Figma 4:582). Two grid columns: copy left, code panel right. The right
@@ -18,9 +15,7 @@ export function Hero() {
       {/* Left: copy */}
       <div className="flex flex-col justify-center gap-10 px-6 py-12 lg:px-10 lg:py-16">
         <div className="flex flex-col gap-5">
-          <div className="flex size-16 items-center justify-center rounded-[20px] bg-brand-gradient">
-            <Image src={whatsappLogo} alt="WhatsApp" className="h-8 w-auto" />
-          </div>
+          <WhatsappIconBrand />
 
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-charcoal lg:text-5xl">
             Ship WhatsApp integration{" "}
