@@ -111,13 +111,15 @@ export function Testimonial() {
           <Body item={TESTIMONIALS[index]} />
         </div>
 
-        <AnimatePresence initial={false}>
+        {/* mode="wait": the current testimonial fades fully out (no blur), the
+            section sits empty for a beat, then the next one fades in. */}
+        <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={index}
-            initial={{ opacity: 0, filter: "blur(8px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, filter: "blur(8px)" }}
-            transition={{ duration: 0.9, ease: EASE }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.4, ease: EASE }}
             className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 py-12 text-center lg:px-10 lg:py-16"
           >
             <Body item={TESTIMONIALS[index]} />

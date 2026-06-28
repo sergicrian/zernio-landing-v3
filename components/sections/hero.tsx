@@ -39,7 +39,7 @@ export function Hero() {
   return (
     <section className="grid grid-cols-1 lg:h-[633px] lg:grid-cols-2">
       {/* Left: copy */}
-      <div className="flex flex-col justify-center gap-10 px-6 py-12 lg:px-10 lg:py-16">
+      <div className="flex flex-col justify-center gap-10 px-6 py-6 lg:px-10 lg:py-16">
         <div className="flex flex-col gap-5">
           <motion.div {...reveal(0)} className="w-fit">
             <WhatsappIconBrand />

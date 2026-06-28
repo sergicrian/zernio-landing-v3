@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/libs/design-system/cn";
 
 import zernioLogo from "@/public/zernio-logo.svg";
+import zernioWordmark from "@/public/zernio-wordmark.svg";
 
 /**
  * Navbar (Figma 4:730). Fixed glass bar, 72px tall. On mobile everything is
@@ -44,12 +45,19 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex h-full w-full max-w-content items-center gap-3 px-6 lg:gap-6 lg:px-10">
-        {/* Logo: natural size on mobile, larger on desktop */}
+        {/* Logo: tightly-cropped wordmark on mobile (the default logo has a lot of
+            internal padding, so it renders tiny); the padded desktop logo at lg. */}
         <a href="#" className="flex h-full shrink-0 items-center">
+          <Image
+            src={zernioWordmark}
+            alt="Zernio"
+            className="h-5 w-auto lg:hidden"
+            priority
+          />
           <Image
             src={zernioLogo}
             alt="Zernio"
-            className="h-7 w-auto lg:h-full lg:w-36"
+            className="hidden h-full w-36 lg:block"
             priority
           />
         </a>
