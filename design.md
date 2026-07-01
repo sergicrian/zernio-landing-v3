@@ -1,9 +1,10 @@
 # Zernio Design System - Light Theme
 
 Zernio is the social media scheduling API for developers. Its design system is
-minimal and monospace-first: light theme only, plenty of whitespace, one accent
-color used sparingly, and content set on warm near-neutral surfaces. There is no
-dark mode and no web-font dependency, both on purpose.
+minimal and warm: light theme only, plenty of negative space, one accent color used
+sparingly, and content set on warm near-neutral surfaces. The type is sans-first
+(Geist) with monospace (Menlo) reserved for technical accents. There is no dark mode,
+on purpose.
 
 Source of truth: `libs/design-system/tokens.ts` (feeds `tailwind.config.js`,
 `app/globals.css` CSS custom properties, and the DaisyUI theme). When this document
@@ -11,39 +12,50 @@ and the code disagree, the code wins.
 
 ## Colors
 
-A flat brand palette, not a numbered 10-step scale. Each color has one `DEFAULT`
-and one `muted` companion. Names are canonical, use the name in code (`bg-coral`),
-never the hex. Colors are plain sRGB hex, no Display P3 variants.
+A flat brand palette plus a warm seven-step neutral scale. Brand colors come in a
+`DEFAULT` plus `muted` companion. Names are canonical, use the name in code
+(`bg-coral`, `bg-warm-sand`), never the hex. Colors are plain sRGB hex, no Display P3
+variants.
 
-| Token              | Hex       | Role |
-|--------------------|-----------|------|
-| `coral`            | `#EB3514` | Primary accent. The single primary action, focus rings, emphasis, logo. |
-| `coral-muted`      | `#E09282` | Soft coral surfaces and tints (used at low opacity). |
-| `burgundy`         | `#660202` | Depth. Secondary emphasis, gradient end, headings on light. |
-| `burgundy-muted`   | `#A57070` | Muted burgundy. |
-| `charcoal`         | `#2D2D2D` | Body text, dark surfaces. |
-| `charcoal-muted`   | `#6B6B6B` | Secondary text, placeholders, icons. |
-| `cream`            | `#F0EFEB` | Default warm surface, page background, neutral chips. |
-| `cream-muted`      | `#D9D8D3` | Hairline borders, dividers. |
-| `white`            | `#FFFFFF` | Elevated cards on cream, text on coral/burgundy. |
+| Token             | Hex       | Role |
+|-------------------|-----------|------|
+| `coral`           | `#EB3514` | Primary accent. The single primary action, focus rings, emphasis, logo. |
+| `coral-muted`     | `#E09282` | Soft coral surfaces and tints (used at low opacity). |
+| `burgundy`        | `#660202` | Depth. Secondary emphasis, gradient end. |
+| `burgundy-muted`  | `#A57070` | Muted burgundy. |
+| `midnight-ink`    | `#000000` | Primary text, headline text, filled pill button background, icon fills. |
+| `driftwood`       | `#777169` | Secondary body text, muted link text, icon strokes. |
+| `fog`             | `#A59F97` | Tertiary helper text, placeholders, light icon strokes. |
+| `silver-mist`     | `#B1B0B0` | Nav item text and icons (default state), subtle background washes, mid-level surface dividers. |
+| `ash-border`      | `#E5E5E5` | Hairline borders on buttons, inputs, cards, nav items, dividers. |
+| `warm-sand`       | `#F5F3F1` | Card surfaces, feature tiles, section backgrounds (one step warmer and darker than the canvas). |
+| `parchment-white` | `#FDFCFC` | Page canvas, the dominant background behind all sections and nav. |
 
 Brand gradient: `linear-gradient(135deg, #EB3514, #660202)` (coral to burgundy),
 Tailwind `bg-brand-gradient`. Use for hero accents and the CTA glow, not large fills
 behind text.
 
-Status colors (badges only, never the brand coral, coral reads as error): success
-`emerald-100 / emerald-700`, info `sky-100 / sky-700`, warning `amber-100 / amber-700`,
-error `red-100 / red-700`.
+Status colors (badges only, never the brand coral, coral reads as the primary
+action): success `emerald-100 / emerald-700`, info `sky-100 / sky-700`, warning
+`amber-100 / amber-700`, error `red-100 / red-700` (background / text).
 
-Rule: one coral element per view (the primary action). Body text is charcoal on
-cream or white, never coral.
+Rule: one coral element per view (the primary action). Body text is `midnight-ink` or
+`driftwood` on `parchment-white` or `warm-sand`, never coral.
 
 ## Typography
 
-One typeface everywhere: **Menlo** monospace, fallbacks `Consolas, Monaco,
-Liberation Mono, Courier New, monospace`. Applied globally via `font-mono` on
-`<html>`. No Google Fonts, no Inter, no web-font network requests. Monospace
-alignment is free, use it for tabular data, prices, and labels.
+Two typefaces, with a clear split.
+
+**Geist** (sans) is the default everywhere: headings, body, UI. Applied globally via
+`font-sans` on `<html>`. Stack: `Geist, -apple-system, BlinkMacSystemFont, "Segoe UI",
+Roboto, sans-serif`. Self-hosted via the `geist` package (woff2), no Google Fonts and
+no third-party font network requests.
+
+**Menlo** (mono) is the `font-mono` utility, reserved for punctual technical accents
+only: buttons, badges, code and request/response snippets, eyebrow/section labels in
+uppercase, and tabular figures (prices, metrics, IDs). Stack: `Menlo, Consolas,
+Monaco, "Liberation Mono", "Courier New", monospace`. System font, zero load. Do not
+set Menlo on body copy or headings.
 
 Size scale (rem / px, line-height baked in):
 
@@ -61,8 +73,8 @@ Size scale (rem / px, line-height baked in):
 | `6xl`   | 3.75rem / 60px  | 1.1         |
 | `7xl`   | 4.5rem / 72px   | 1.05        |
 
-Weights: `normal` 400, `medium` 500, `semibold` 600, `bold` 700. Build hierarchy
-with size and weight first, color last.
+Weights: `normal` 400, `medium` 500. 500 is the heaviest weight, no `semibold` 600
+and no `bold` 700. Build hierarchy with size first, weight second, color last.
 
 ## Spacing
 
@@ -97,7 +109,9 @@ actual rendered values.
 
 Subtle, low-opacity neutral shadows, this is a flat, light system. Use Tailwind
 `shadow-sm` for raised controls and cards, scale up gently (`shadow-md` / `lg` / `xl`)
-for popovers and modals. The one branded shadow is the coral CTA glow:
+for popovers and modals. Pair shadows with `warm-sand` surfaces lifting off the
+`parchment-white` canvas and `ash-border` hairlines, do not lean on shadow alone. The
+one branded shadow is the coral CTA glow:
 
 ```css
 box-shadow: 0 0 20px rgba(235, 53, 20, 0.3); /* shadow-glow */
@@ -115,9 +129,12 @@ shadcn/ui pattern (`class-variance-authority` + `clsx` + `tailwind-merge`, Radix
 via `@radix-ui/react-slot`, `lucide-react` icons), in `components/ui/`. Merge classes
 with `cn()` from `libs/design-system/cn.ts`.
 
-**Button** (`button.tsx`). Variants: `default` (solid coral, primary), `secondary`
-(solid burgundy), `soft` (coral tint), `outline`, `ghost`, `link`, `destructive`
-(red). `md` is the default size.
+**Button** (`button.tsx`). Label text is set in **Menlo** (`font-mono`), like badges.
+Variants: `default` (solid coral, primary), `secondary` (solid burgundy), `soft`
+(coral tint), `outline` (`ash-border` border, `midnight-ink` text), `ghost`, `link`,
+`destructive` (red). `md` is the default size. Neutral filled pills (full radius)
+use `midnight-ink` background with `parchment-white` text, for secondary CTAs where
+burgundy reads too heavy.
 
 | Size   | Height  | Radius | Padding-x | Text |
 |--------|---------|--------|-----------|------|
@@ -125,29 +142,36 @@ with `cn()` from `libs/design-system/cn.ts`.
 | `md`   | 40px    | 8px    | 16px      | 14px |
 | `lg`   | 48px    | 8px    | 24px      | 16px |
 | `xl`   | 56px    | 12px   | 32px      | 16px |
-| `icon` | 40x40px | 8px    | —         | —    |
+| `icon` | 40x40px | 8px    | â         | â    |
 
-**Input** (`input.tsx`). 40px height, 8px radius, `cream-muted` border, white
-background, `charcoal` text, `charcoal-muted/60` placeholder. On focus the border
-turns `coral` (no ring).
+**Input** (`input.tsx`). 40px height, 8px radius, `ash-border` border,
+`parchment-white` background, `midnight-ink` text, `fog` placeholder. On focus the
+border turns `coral` (no ring).
 
-**Badge** (`badge.tsx`). Full-radius pill, `px-2.5 py-0.5`, 12px text. Variants:
-`default` (coral), `soft`, `outline`, `secondary` (burgundy), `neutral`, `success`,
-`info` (blue, not coral), `warning`, `error` / `destructive`.
+**Badge** (`badge.tsx`). Full-radius pill, `px-2.5 py-0.5`, 12px text, set in
+**Menlo** (`font-mono`). Variants: `default` (coral), `soft`, `outline`, `secondary`
+(burgundy), `neutral`, `success`, `info` (blue, not coral), `warning`,
+`error` / `destructive`.
 
 **Focus ring** (interactive controls): 2px ring `coral` at 50% opacity with a 2px
-offset (`focus-visible:ring-2 ring-coral/50 ring-offset-2`).
+offset (`focus-visible:ring-2 ring-coral/50 ring-offset-2 ring-offset-parchment-white`).
 
 **Card** (`card.tsx`): `Card`, `CardHeader`, `CardTitle`, `CardDescription`,
-`CardContent`, `CardFooter`.
+`CardContent`, `CardFooter`. `warm-sand` fill, `ash-border` border.
 
-**Logo** (`logo.tsx`): `LogoMark` with `variant: primary | dark | white`. Brand
-assets in `public/brand/` (`logo-primary`, `logo-white`, `logo-dark`, `mark-*`,
-`icon-primary`, all SVG + PNG). Clear space equals the height of the mark, never
-recolor or stretch.
+**Nav** (`nav.tsx`). Nav item text and icons default to `silver-mist`, the inactive
+state. Active or hovered items turn `midnight-ink`, never coral (coral stays
+reserved for the one primary action per view). Hairline dividers and the nav
+underline use `ash-border`.
 
-Reuse these primitives before writing new UI. No `dark:` variants, the system is
-one theme on purpose.
+**Logo** (`logo.tsx`): `LogoMark` with `variant: primary | dark | white`. On the light
+theme the default is `primary` (coral) or `dark`; the `white` variant is for dark
+backgrounds and exports only. Brand assets in `public/brand/` (`logo-primary`,
+`logo-white`, `logo-dark`, `mark-*`, `icon-primary`, all SVG + PNG). Clear space
+equals the height of the mark, never recolor or stretch.
+
+Reuse these primitives before writing new UI. No `dark:` variants, the system is one
+theme on purpose.
 
 ## Content
 

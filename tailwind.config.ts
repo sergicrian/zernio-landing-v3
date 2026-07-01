@@ -16,25 +16,36 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // --- Colors: flat brand palette, each with DEFAULT + muted ---
+      // --- Colors: flat brand palette + warm seven-step neutral scale ---
+      // Values reference CSS custom properties so a scoped theme (`.theme-dark`,
+      // see globals.css) can re-map the whole palette without touching any
+      // component. The canonical light values live in `:root`.
       colors: {
         coral: {
-          DEFAULT: "#EB3514",
-          muted: "#E09282",
+          DEFAULT: "var(--coral)", // primary accent, the single primary action
+          muted: "var(--coral-muted)", // soft coral surfaces and tints
         },
         burgundy: {
-          DEFAULT: "#660202",
-          muted: "#A57070",
+          DEFAULT: "var(--burgundy)", // depth, secondary emphasis, gradient end
+          muted: "var(--burgundy-muted)",
         },
-        charcoal: {
-          DEFAULT: "#2D2D2D",
-          muted: "#6B6B6B",
-        },
-        cream: {
-          DEFAULT: "#F0EFEB",
-          muted: "#D9D8D3",
-        },
-        white: "#FFFFFF",
+        // Primary text, headlines, filled pill background, icon fills.
+        "midnight-ink": "var(--midnight-ink)",
+        // Secondary body text, muted link text, icon strokes.
+        driftwood: "var(--driftwood)",
+        // Tertiary helper text, placeholders, light icon strokes.
+        fog: "var(--fog)",
+        // Nav item text/icons (default), subtle washes, mid-level dividers.
+        "silver-mist": "var(--silver-mist)",
+        // Hairline borders on buttons, inputs, cards, nav items, dividers.
+        "ash-border": "var(--ash-border)",
+        // Card surfaces, feature tiles, section backgrounds (warmer than canvas).
+        "warm-sand": "var(--warm-sand)",
+        // Page canvas, the dominant background behind all sections and nav.
+        "parchment-white": "var(--parchment-white)",
+        // Quoted strings in embedded code terminals (themes independently of
+        // burgundy so it stays legible on the dark terminal surface).
+        "code-string": "var(--code-string)",
       },
 
       // --- Brand gradient + branded CTA glow ---
@@ -45,8 +56,18 @@ const config: Config = {
         glow: "0 0 20px rgba(235, 53, 20, 0.3)",
       },
 
-      // --- Typography: Menlo monospace everywhere, no web fonts ---
+      // --- Typography: Geist (sans) by default; Menlo (mono) for technical accents ---
       fontFamily: {
+        // Default font everywhere, applied via `font-sans` on <html>.
+        sans: [
+          "var(--font-geist)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "sans-serif",
+        ],
+        // Punctual technical accents (badges, code, eyebrows, tabular figures).
         mono: [
           "Menlo",
           "Consolas",
@@ -55,8 +76,6 @@ const config: Config = {
           "Courier New",
           "monospace",
         ],
-        // Dashboard UI mockups only (Zernio's product font).
-        geist: ["var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       fontSize: {
         xs: ["0.75rem", { lineHeight: "1rem" }],
@@ -74,7 +93,7 @@ const config: Config = {
 
       // --- Layout constants (spacing stays on the 4px default scale) ---
       maxWidth: {
-        content: "1280px",
+        content: "1280px", // outer frame (solid rails)
       },
       spacing: {
         page: "24px", // page padding, mobile

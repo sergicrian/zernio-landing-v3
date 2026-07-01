@@ -47,14 +47,18 @@ export function Faq() {
 
   return (
     <section className="flex flex-col lg:flex-row">
-      {/* Title column */}
-      <div className="flex flex-col justify-center gap-5 border-b border-cream-muted px-6 py-10 lg:w-[300px] lg:shrink-0 lg:border-r lg:px-10">
-        <h2 className="text-2xl font-bold tracking-tight text-charcoal">
-          Frequently asked questions
-        </h2>
-        <Button variant="link" className="h-auto self-start p-0 text-xs">
-          Contact
-        </Button>
+      {/* Title column: pinned to the top, aligned with the first FAQ item via a
+          spacer that mirrors the accordion's 170px top band. */}
+      <div className="flex flex-col border-b border-ash-border lg:w-[300px] lg:shrink-0 lg:border-r">
+        <div className="hidden h-[170px] lg:block" aria-hidden />
+        <div className="flex flex-col gap-5 px-6 py-10 lg:sticky lg:top-0 lg:px-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-midnight-ink">
+            Frequently asked questions
+          </h2>
+          <Button variant="outline" size="sm" className="self-start">
+            Contact
+          </Button>
+        </div>
       </div>
 
       {/* Accordion, framed by ruled bands on desktop */}
@@ -64,19 +68,19 @@ export function Faq() {
         {ITEMS.map((item, i) => {
           const isOpen = open === i;
           return (
-            <div key={item.q} className="border-b border-cream-muted">
+            <div key={item.q} className="border-b border-ash-border">
               <button
                 type="button"
                 onClick={() => setOpen(isOpen ? -1 : i)}
                 aria-expanded={isOpen}
                 className="flex w-full items-start gap-5 px-6 py-5 text-left lg:px-8"
               >
-                <span className="flex-1 text-base font-bold text-charcoal">
+                <span className="flex-1 text-base font-semibold text-midnight-ink">
                   {item.q}
                 </span>
                 <Plus
                   className={cn(
-                    "mt-0.5 size-5 shrink-0 text-charcoal-muted transition-transform duration-base ease-brand",
+                    "mt-0.5 size-5 shrink-0 text-driftwood transition-transform duration-base ease-brand",
                     isOpen && "rotate-45",
                   )}
                   aria-hidden
@@ -89,7 +93,7 @@ export function Faq() {
                 transition={{ duration: reduce ? 0 : 0.3, ease: [0.4, 0, 0.2, 1] }}
                 className="overflow-hidden"
               >
-                <p className="px-6 pb-5 text-base text-charcoal-muted lg:px-8">
+                <p className="px-6 pb-5 text-base text-driftwood lg:px-8">
                   {item.a}
                 </p>
               </motion.div>

@@ -4,16 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/libs/design-system/cn";
 
 const badgeVariants = cva(
-  // Full-radius pill, px-2.5 py-0.5, 12px text.
-  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+  // Full-radius pill, px-2.5 py-0.5, 12px text, set in Menlo (font-mono).
+  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium font-mono",
   {
     variants: {
       variant: {
         default: "bg-coral text-white",
         soft: "bg-coral/10 text-coral",
-        outline: "border border-cream-muted text-charcoal",
+        outline: "border border-ash-border text-midnight-ink",
         secondary: "bg-burgundy text-white",
-        neutral: "bg-cream text-charcoal",
+        neutral: "bg-midnight-ink text-parchment-white",
         success: "bg-emerald-100 text-emerald-700",
         info: "bg-sky-100 text-sky-700", // blue, never the brand coral
         warning: "bg-amber-100 text-amber-700",

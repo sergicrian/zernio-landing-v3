@@ -55,8 +55,12 @@ const TESTIMONIALS: Item[] = [PEDRO, LAUTARO];
 function Body({ item }: { item: Item }) {
   return (
     <>
-      <Image src={item.logo} alt={item.company} className="h-7 w-auto" />
-      <p className="max-w-2xl text-base leading-relaxed text-charcoal">
+      <Image
+        src={item.logo}
+        alt={item.company}
+        className="h-7 w-auto dark-logo-invert"
+      />
+      <p className="max-w-2xl text-base leading-relaxed text-midnight-ink">
         {item.quote}
       </p>
       <div className="flex items-center gap-3">
@@ -68,8 +72,8 @@ function Body({ item }: { item: Item }) {
           />
         </div>
         <div className="text-left">
-          <p className="text-xs font-bold text-charcoal">{item.name}</p>
-          <p className="text-xs text-charcoal-muted">{item.role}</p>
+          <p className="text-xs font-semibold text-midnight-ink">{item.name}</p>
+          <p className="text-xs text-driftwood">{item.role}</p>
         </div>
       </div>
     </>
@@ -90,16 +94,16 @@ export function Testimonial() {
   }, [reduce, paused]);
 
   return (
-    <section className="flex border-b border-cream-muted">
+    <section className="flex border-b border-ash-border rule-b">
       {/* Left rail */}
       <div className="hidden w-[62px] shrink-0 flex-col lg:flex">
-        <div className="flex-1 border-b border-cream-muted" />
+        <div className="flex-1 border-b border-ash-border" />
         <div className="flex-1" />
       </div>
 
       {/* Quote (rotating) */}
       <div
-        className="relative flex-1 lg:border-x lg:border-cream-muted"
+        className="relative flex-1 lg:border-x lg:border-ash-border"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -129,7 +133,7 @@ export function Testimonial() {
 
       {/* Right rail */}
       <div className="hidden w-[64px] shrink-0 flex-col lg:flex">
-        <div className="flex-1 border-b border-cream-muted" />
+        <div className="flex-1 border-b border-ash-border" />
         <div className="flex-1" />
       </div>
     </section>

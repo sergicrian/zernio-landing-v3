@@ -2,28 +2,135 @@
 @config "../tailwind.config.ts";
 
 /*
- * Zernio design system - light theme only, no dark mode (deliberate).
- * Color custom properties mirror the canonical palette in design.md.
+ * Zernio design system. Color custom properties mirror the canonical palette in
+ * design.md. The Tailwind tokens (tailwind.config.ts) resolve to these vars, so a
+ * scoped theme can re-map the whole palette without touching a single component.
+ *
+ * :root = light (default, the main site). `.theme-dark` = the dark variant used
+ * by the /dark route. Keep the light values here untouched to avoid regressions.
  */
 :root {
   --coral: #eb3514;
   --coral-muted: #e09282;
   --burgundy: #660202;
   --burgundy-muted: #a57070;
-  --charcoal: #2d2d2d;
-  --charcoal-muted: #6b6b6b;
-  --cream: #f0efeb;
-  --cream-muted: #d9d8d3;
-  --white: #ffffff;
+  --midnight-ink: #000000;
+  --driftwood: #777169;
+  --fog: #a59f97;
+  --silver-mist: #b1b0b0;
+  --ash-border: #e5e5e5;
+  --warm-sand: #f5f3f1;
+  --parchment-white: #fdfcfc;
+  --code-string: #660202; /* same deep burgundy as the light terminal today */
+}
+
+/*
+ * Dark theme. Warm near-black canvas with a warm-white ink, mirroring the light
+ * neutral scale inverted. Brand accents (coral, burgundy) stay saturated so the
+ * CTA gradient and badges keep their identity; only neutrals invert. Applied by
+ * wrapping the page in `.theme-dark` (see app/dark/page.tsx).
+ */
+.theme-dark {
+  --coral: #eb3514; /* brand accent, unchanged from light */
+  --coral-muted: #8a4433;
+  --burgundy: #660202; /* brand, unchanged from light */
+  --burgundy-muted: #8a5a5a;
+  --midnight-ink: #fafafa; /* Marble White — primary text (headings, body, nav) */
+  --driftwood: #a8a8a8; /* Ash — secondary body text, icon fills */
+  --fog: #7d7d7d; /* Fog — tertiary text / placeholders */
+  --silver-mist: #666666; /* Smoke — dividers, nav default, terminal dots, logo fills */
+  --ash-border: #262626; /* subtle hairline on the near-black canvas */
+  --warm-sand: #161616; /* elevated surfaces / cards, barely lifted (Vercel-style) */
+  --parchment-white: #0a0a0a; /* near-black page canvas (Vercel-style) */
+  --code-string: #e0906f; /* legible warm string color on the dark terminal */
 }
 
 html {
-  background-color: var(--cream);
-  color: var(--charcoal);
+  background-color: var(--parchment-white);
+  color: var(--midnight-ink);
+  /* Geist (sans) is the default typeface via `font-sans`; Menlo (mono) is opted
+     into via `font-mono` for technical accents. */
+  font-family: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
 }
 
 body {
   min-height: 100%;
-  background-color: var(--cream);
-  color: var(--charcoal);
+  background-color: var(--parchment-white);
+  color: var(--midnight-ink);
+}
+
+/* Dark-theme only: recolor black/monochrome logos (raster or SVG) to a solid
+   white silhouette so they stay visible on the dark canvas. No-op in light. */
+.theme-dark .dark-logo-invert {
+  filter: brightness(0) invert(1);
+}
+
+/* Mock UI panels (how-it-works step cards): white in light so they read as clean
+   product UI, but the elevated surface in dark so they stand out against the
+   near-black canvas the step cards now use. */
+.mock-surface {
+  background-color: var(--parchment-white);
+}
+.theme-dark .mock-surface {
+  background-color: var(--warm-sand);
+}
+
+/* Faint blueprint dot-matrix for empty grid areas (Attio-style). Warm-gray dots
+   (silver-mist) at low opacity so they read as texture, not content. */
+.bg-dot-matrix {
+  background-image: radial-gradient(
+    rgba(177, 176, 176, 0.5) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Section rules (Attio): the element's own SOLID border draws the line across the
+   1080 content; this pseudo continues it as DASHED into the side gutters, behind
+   the solid (z-index -1) and clipped at the 1280 outer rails (the content box uses
+   overflow-x-clip). rule-t = top edge, rule-b = bottom edge, rule-y = both. */
+.rule-t,
+.rule-b,
+.rule-y {
+  position: relative;
+}
+.rule-t::before,
+.rule-t::after,
+.rule-b::before,
+.rule-b::after,
+.rule-y::before,
+.rule-y::after {
+  content: "";
+  position: absolute;
+  width: 50vw; /* overshoots the gutter; clipped at the 1280 rails */
+  pointer-events: none;
+}
+/* left gutter (sits just left of the section) / right gutter (just right) */
+.rule-t::before,
+.rule-b::before,
+.rule-y::before {
+  right: 100%;
+}
+.rule-t::after,
+.rule-b::after,
+.rule-y::after {
+  left: 100%;
+}
+.rule-t::before,
+.rule-t::after {
+  top: -1px;
+  border-top: 1px dashed var(--ash-border);
+}
+.rule-b::before,
+.rule-b::after {
+  bottom: -1px;
+  border-bottom: 1px dashed var(--ash-border);
+}
+.rule-y::before,
+.rule-y::after {
+  top: -1px;
+  bottom: -1px;
+  border-top: 1px dashed var(--ash-border);
+  border-bottom: 1px dashed var(--ash-border);
 }

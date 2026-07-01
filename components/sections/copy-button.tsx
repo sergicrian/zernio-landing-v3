@@ -34,12 +34,12 @@ export function CopyButton({
       onClick={onClick}
       aria-label={copied ? "Copied" : "Copy code"}
       className={cn(
-        "text-white/40 transition-colors hover:text-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral/50 focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal",
+        "text-driftwood transition-colors hover:text-midnight-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral/50 focus-visible:ring-offset-2 focus-visible:ring-offset-warm-sand",
         className,
       )}
     >
       {copied ? (
-        <Check className="size-5 text-emerald-400" />
+        <Check className="size-5 text-emerald-600" />
       ) : (
         <Copy className="size-5" />
       )}

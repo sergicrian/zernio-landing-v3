@@ -6,19 +6,19 @@ import { Button } from "@/components/ui/button";
  */
 export function ErrorReference() {
   return (
-    <section className="border-b border-cream-muted p-6 lg:p-10">
-      <div className="flex flex-col gap-5 rounded-xl border border-cream-muted p-6 sm:flex-row sm:items-end sm:justify-between lg:p-10">
+    <section className="border-b border-ash-border rule-b p-6 lg:p-10">
+      <div className="flex flex-col gap-5 rounded-xl border border-ash-border bg-warm-sand p-6 sm:flex-row sm:items-end sm:justify-between lg:p-10">
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-bold text-charcoal">
+          <p className="text-sm font-semibold text-midnight-ink">
             WhatsApp API error reference
           </p>
-          <p className="max-w-2xl text-base text-charcoal-muted">
+          <p className="max-w-2xl text-base text-driftwood">
             Comprehensive guide to WhatsApp API error codes. Find solutions and
             troubleshoot common integration issues.
           </p>
         </div>
 
-        <Button variant="link" className="h-auto shrink-0 self-start p-0 text-xs sm:self-end">
+        <Button variant="outline" size="sm" className="shrink-0 self-start sm:self-end">
           View error reference
         </Button>
       </div>

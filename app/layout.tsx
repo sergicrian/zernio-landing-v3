@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 
-// Self-hosted Geist, scoped to the dashboard UI mockups only (the rest of the
-// site stays on Menlo). Exposed as a CSS variable, applied via `font-geist`.
+// Self-hosted Geist, applied globally across the whole site. Exposed as a CSS
+// variable and used as the `font-sans` default (`font-mono` is Menlo).
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
@@ -17,11 +17,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning: browser extensions (ColorZilla's
+    // `cz-shortcut-listen`, etc.) inject attributes onto <html>/<body> before
+    // React hydrates. This silences only those element-level mismatches; it does
+    // not mask hydration bugs in the app tree below.
     <html
       lang="en"
-      className={`${geist.variable} font-mono h-full antialiased`}
+      className={`${geist.variable} font-sans h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body
+        className="min-h-full flex flex-col"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }

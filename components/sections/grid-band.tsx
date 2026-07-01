@@ -10,11 +10,11 @@ export function GridBand({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "grid h-14 grid-cols-1 border-b border-cream-muted lg:grid-cols-2",
+        "grid h-14 grid-cols-1 border-b border-ash-border rule-b lg:grid-cols-2",
         className,
       )}
     >
-      <div className="border-cream-muted lg:border-r" />
+      <div className="border-ash-border lg:border-r" />
       <div />
     </div>
   );

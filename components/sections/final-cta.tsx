@@ -20,7 +20,7 @@ export function FinalCta() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="border-b border-cream-muted p-6 lg:p-10">
+    <section className="border-b border-ash-border rule-b p-6 lg:p-10">
       <div
         className="relative overflow-hidden rounded-xl"
         style={{
@@ -61,7 +61,7 @@ export function FinalCta() {
           </div>
 
           <div className="flex max-w-xl flex-col gap-5">
-            <h2 className="text-2xl font-bold tracking-tight text-white">
+            <h2 className="text-2xl font-semibold tracking-tight text-white">
               Stop fighting Meta&apos;s developer portal
             </h2>
             <p className="text-lg text-white/90">
