@@ -1,3 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
+
+import { HERO_STEP, useReveal } from "@/components/sections/hero-reveal";
+
 import warner from "@/public/WarnerMusicGroup-logo.svg";
 import clickup from "@/public/ClickUp-logo.svg";
 import vibiz from "@/public/vibiz-logo.svg";
@@ -29,7 +35,10 @@ export function TrustBar() {
       {/* px-4 / lg:px-8 mirrors the hero and navbar so the edges line up inside the
           same 1080 box. */}
       <div className="mx-auto w-full max-w-[1080px] px-4 lg:px-8">
-        <div className="flex flex-col items-center gap-y-12 lg:flex-row lg:items-center lg:gap-x-10">
+        <motion.div
+          {...useReveal(HERO_STEP.trust)}
+          className="flex flex-col items-center gap-y-12 lg:flex-row lg:items-center lg:gap-x-10"
+        >
           <p className="shrink-0 text-label text-ash">Trusted by developers at</p>
 
           {/* Columns step down with width: 2 (mobile) -> 3 (tablet) -> single row of 4
@@ -63,7 +72,7 @@ export function TrustBar() {
               />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

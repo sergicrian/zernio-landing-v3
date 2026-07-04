@@ -1,3 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
+
+import { useBackgroundReveal } from "@/components/sections/hero-reveal";
+
 /**
  * Hero background layer (v3 dark). A full-bleed, absolutely-positioned layer that sits
  * BEHIND the hero content (the fold container is `relative`; this is `-z-10`). It is the
@@ -33,7 +39,8 @@
  */
 export function HeroBackground() {
   return (
-    <div
+    <motion.div
+      {...useBackgroundReveal()}
       className="pointer-events-none absolute inset-0 -z-10 [--hero-bg-focus:28%] lg:[--hero-bg-focus:38%]"
       aria-hidden="true"
     >
@@ -63,6 +70,6 @@ export function HeroBackground() {
       {/* Calm zone: a Void veil concentrated on the centre column so the terminal and
           white heading stay legible, fading to transparent so the side waves survive. */}
       <div className="hero-bg-calm" />
-    </div>
+    </motion.div>
   );
 }

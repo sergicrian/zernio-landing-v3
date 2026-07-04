@@ -1,16 +1,26 @@
+"use client";
+
+import Image, { type StaticImageData } from "next/image";
+import { motion } from "motion/react";
 import { Check, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import {
+  PANEL_STEP,
+  useReveal,
+  useScrollReveal,
+} from "@/components/sections/hero-reveal";
+
+import zernioApp from "@/public/zernio-app.svg";
+import metaApp from "@/public/meta-app.svg";
 
 /**
- * Why Zernio (Figma header 4:669 + table 4:673). Centered eyebrow + two-tone
- * heading, then a two-column comparison built as cells of the line grid (1px
- * ash-border borders, square, no shadow), so it merges with the surrounding grid
- * rather than reading as floating cards. Columns stack on mobile, Zernio first.
+ * Why Zernio (Figma node 185:1222). Centered coral eyebrow + two-tone heading,
+ * then a two-column comparison as two equal-height cards. The Zernio card lifts
+ * off the canvas with an obsidian->void fill inside a smoke->void gradient
+ * hairline; the Cloud API card is a plain graphite outline. Each header carries
+ * the product app icon. On mobile the row icon/text stack vertically.
  *
- * Resolution: Figma draws the Zernio checks in coral. Per design.md (coral reads
- * as error and is reserved for one action per view) the checks render emerald
- * (success). The WhatsApp crosses stay driftwood (gray), per the rules.
+ * Rendered inside the shared bordered panel composed in app/page.tsx.
  */
 const ZERNIO = [
   "One API key. No Meta Business verification maze. Start sending in 30 seconds",
@@ -30,62 +40,104 @@ const CLOUD = [
 
 export function WhyZernio() {
   return (
-    <section>
-      {/* Header */}
-      <div className="flex flex-col items-center gap-5 px-6 py-10 text-center lg:px-10">
-        <Button variant="soft" size="sm" className="tracking-wider">
+    <div>
+      {/* Header. Interior padding matches the navbar pill (px-4/lg:px-8). The title
+          reveals on load, like the hero h1. */}
+      <motion.div
+        {...useReveal(PANEL_STEP.title)}
+        className="flex flex-col items-center gap-4 px-4 pb-10 pt-12 text-center lg:px-8"
+      >
+        <p className="font-mono text-tag tracking-wider text-coral">
           Why Zernio?
-        </Button>
-        <h2 className="text-2xl font-semibold tracking-tight text-midnight-ink">
+        </p>
+        <h2 className="text-heading font-medium tracking-tight text-paper">
           Meta&apos;s API fights you.{" "}
-          <span className="text-driftwood">Ours doesn&apos;t.</span>
+          <span className="text-fog">Ours doesn&apos;t.</span>
         </h2>
-      </div>
+      </motion.div>
 
-      {/* Comparison table */}
-      <div className="grid grid-cols-1 border-y border-ash-border rule-y lg:grid-cols-2">
-        {/* Zernio (first on mobile) */}
-        <div className="border-ash-border lg:border-r">
-          <h3 className="px-6 py-5 text-base font-semibold text-midnight-ink lg:px-10">
-            Zernio API
-          </h3>
-          <ul>
-            {ZERNIO.map((row) => (
-              <li
-                key={row}
-                className="flex items-center gap-5 px-6 py-2.5 lg:px-10"
-              >
-                <Check
-                  className="size-6 shrink-0 text-emerald-600"
-                  aria-hidden
-                />
-                <span className="text-base text-driftwood">{row}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* WhatsApp Cloud API */}
-        <div className="border-t border-ash-border lg:border-t-0">
-          <h3 className="px-6 py-5 text-base font-semibold text-midnight-ink lg:px-10">
-            WhatsApp Cloud API (direct)
-          </h3>
-          <ul>
-            {CLOUD.map((row) => (
-              <li
-                key={row}
-                className="flex items-center gap-5 px-6 py-2.5 lg:px-10"
-              >
-                <X
-                  className="size-6 shrink-0 text-driftwood"
-                  aria-hidden
-                />
-                <span className="text-base text-driftwood">{row}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Comparison cards (equal height via the grid's stretch). Each reveals on
+          scroll like the hero terminal, left then right. */}
+      <div className="grid grid-cols-1 gap-5 px-4 pb-12 md:grid-cols-2 lg:px-8">
+        <ComparisonCard
+          title="Zernio API"
+          logo={zernioApp}
+          rows={ZERNIO}
+          tone="pro"
+          step={PANEL_STEP.cardLeft}
+        />
+        <ComparisonCard
+          title="WhatsApp Cloud API (direct)"
+          logo={metaApp}
+          rows={CLOUD}
+          tone="con"
+          step={PANEL_STEP.cardRight}
+        />
       </div>
-    </section>
+    </div>
+  );
+}
+
+function ComparisonCard({
+  title,
+  logo,
+  rows,
+  tone,
+  step,
+}: {
+  title: string;
+  logo: StaticImageData;
+  rows: string[];
+  /** "pro" ticks rows in coral on a gradient card, "con" crosses them in ash. */
+  tone: "pro" | "con";
+  /** Scroll-reveal ordinal (see SCROLL_STEP). */
+  step: number;
+}) {
+  const Icon = tone === "pro" ? Check : X;
+  const iconColor = tone === "pro" ? "text-coral" : "text-ash";
+  const reveal = useScrollReveal(step);
+
+  const body = (
+    <>
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-label-lg font-medium text-paper">{title}</h3>
+        <Image src={logo} alt="" aria-hidden className="size-11 shrink-0" />
+      </div>
+      <ul className="mt-5 space-y-5">
+        {rows.map((row) => (
+          <li
+            key={row}
+            className="flex flex-col gap-2 md:flex-row md:items-center md:gap-5"
+          >
+            <Icon className={`size-6 shrink-0 ${iconColor}`} aria-hidden />
+            <span className="text-body text-fog">{row}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+
+  // Zernio: obsidian->void fill inside a smoke->void gradient hairline (1px pad),
+  // with a coral comet sweeping around the border (see .card-beam in globals.css).
+  if (tone === "pro") {
+    return (
+      <motion.div {...reveal} className="relative rounded-2xl p-px">
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-2xl bg-gradient-to-b from-smoke to-void"
+        />
+        <div aria-hidden className="card-beam absolute inset-0 rounded-2xl" />
+        <div className="relative h-full rounded-[calc(1rem-1px)] bg-gradient-to-b from-obsidian to-void p-8">
+          {body}
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Cloud API: outline only, no surface fill.
+  return (
+    <motion.div {...reveal} className="rounded-2xl border border-graphite p-8">
+      {body}
+    </motion.div>
   );
 }

@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { HERO_STEP, useReveal } from "@/components/sections/hero-reveal";
 
 import zernioWordmark from "@/public/zernio-wordmark.svg";
 
@@ -26,7 +30,10 @@ const navLink =
 export function Navbar() {
   return (
     <div className="sticky top-0 z-50 px-page pt-4 lg:px-page-desktop">
-      <header className="mx-auto flex w-full max-w-[1080px] items-center gap-4 rounded-xl border border-graphite bg-carbon/95 px-4 py-3 backdrop-blur-md lg:px-8">
+      <motion.header
+        {...useReveal(HERO_STEP.navbar)}
+        className="mx-auto flex w-full max-w-[1080px] items-center gap-4 rounded-xl border border-white/10 bg-carbon/50 px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 lg:px-8"
+      >
         {/* Logo (coral wordmark). */}
         <a href="#" className="flex shrink-0 items-center" aria-label="Zernio home">
           <Image
@@ -65,7 +72,7 @@ export function Navbar() {
           {/* Primary CTA: same coral button component as the hero. */}
           <Button className="rounded-xl">Start for free</Button>
         </div>
-      </header>
+      </motion.header>
     </div>
   );
 }

@@ -93,6 +93,15 @@ body {
   transform: translate(-50%, -50%);
   background: var(--void);
   isolation: isolate;
+  /* The Void fill backs the screen blend (so the light-on-black media dissolves
+     seamlessly up behind the navbar and trust bar), but its opaque bottom edge cut
+     in hard where it reached the sections below the fold: the faintly-lit Void above
+     the edge met pure page Void below it, reading as a black line across the top of
+     the next section. Fade the stage out over its lowest band so the blended layer
+     dissolves into the page Void with no hard edge. Top edge is off-screen above the
+     navbar (Void meeting Void) so it needs no fade. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
 }
 /* The media sits centred inside the stage (so its focal point coincides with the stage
    centre = --hero-bg-focus over the terminal). width:100% is full-bleed with no
@@ -180,6 +189,40 @@ body {
     transparent 1px
   );
   background-size: 22px 22px;
+}
+
+/* Animated card border (Why Zernio, Zernio card). A single coral comet travels
+   smoothly around the 1px hairline: a conic gradient whose start angle is animated
+   via the registered `--beam-angle` custom property (registering it as an <angle>
+   is what lets it interpolate; a plain var would jump). The comet is a bright coral
+   head at ~350deg with a tail fading back to ~310deg, transparent everywhere else,
+   so the static smoke->void hairline shows through underneath the rest of the way.
+   Slow (9s) and narrow, so it reads as a subtle sweep, not a spinner. */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.card-beam {
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg,
+    transparent 310deg,
+    var(--coral) 350deg,
+    transparent 360deg
+  );
+  animation: card-beam-spin 9s linear infinite;
+}
+@keyframes card-beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-beam {
+    animation: none;
+    background: none;
+  }
 }
 
 /* Section rules (Attio): the element's own SOLID border draws the line across the

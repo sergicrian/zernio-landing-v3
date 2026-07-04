@@ -7,16 +7,19 @@ import { motion, useInView, useReducedMotion } from "motion/react";
 
 import { Badge } from "@/components/ui/badge";
 import { SectionHeading } from "@/components/sections/section-heading";
+import { useScrollReveal } from "@/components/sections/hero-reveal";
 import { cn } from "@/libs/design-system/cn";
 
 import usFlag from "@/public/usflag.png";
 import spainFlag from "@/public/spainflag.png";
 
 /**
- * How it works (Figma 30:1065). Each card runs a subtle looping micro-demo of the
- * real product action (Resend style). Loops only run while the card is in view and
- * the cursor is NOT over it; under prefers-reduced-motion they show a static state.
- * Number badge on top, title + copy below; 3 across on desktop, stacked on mobile.
+ * How it works (Figma 30:1065), on the v3 dark system. Each card runs a subtle
+ * looping micro-demo of the real product action (Resend style). Loops only run
+ * while the card is in view and the cursor is NOT over it; under
+ * prefers-reduced-motion they show a static state. The card UI panels reuse the
+ * secondary-surface gradient (graphite->carbon fill inside a smoke->void hairline);
+ * the step number is set in the tag token. 3 across on desktop, stacked on mobile.
  */
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
@@ -40,39 +43,37 @@ function NumberSelectorMock({ play }: { play: boolean }) {
   const sel = reduce ? false : selected;
 
   return (
-    <div className="mock-surface flex flex-col gap-2 rounded-xl border border-ash-border p-2 font-sans">
-      {/* Color cross-fade via CSS transition on themed tokens (so it adapts to
-          the dark theme); motion can't interpolate CSS vars. */}
+    <div className="mock-surface flex flex-col gap-2 rounded-xl border border-graphite p-2 font-sans">
+      {/* Color cross-fade via CSS transition on themed tokens; motion can't
+          interpolate CSS vars. */}
       <div
         className={cn(
-          "flex gap-3 rounded-lg border p-3 shadow-sm transition-colors duration-500 ease-brand",
-          sel
-            ? "border-coral bg-coral/10"
-            : "border-ash-border bg-parchment-white",
+          "flex gap-3 rounded-lg border p-3 transition-colors duration-500 ease-brand",
+          sel ? "border-coral bg-coral/10" : "border-graphite bg-carbon",
         )}
       >
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-ash-border text-midnight-ink">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-graphite text-mist">
           <Plus className="size-4" aria-hidden />
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-midnight-ink">Get a number</span>
+            <span className="text-sm font-medium text-paper">Get a number</span>
             <Badge variant="success">recommended</Badge>
           </div>
-          <span className="text-xs text-driftwood">
+          <span className="text-xs text-fog">
             From $2/mo. Pick a country, we handle setup.
           </span>
         </div>
       </div>
       <div className="flex gap-3 rounded-lg p-3">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-ash-border text-driftwood">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-graphite text-fog">
           <Hash className="size-4" aria-hidden />
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-semibold text-midnight-ink">
+          <span className="text-sm font-medium text-paper">
             Use my own number
           </span>
-          <span className="text-xs text-driftwood">
+          <span className="text-xs text-fog">
             Bring your existing phone number. Requires verification during setup.
           </span>
         </div>
@@ -117,30 +118,30 @@ function NumberTableMock({ play }: { play: boolean }) {
   const apr = reduce ? false : approved;
 
   return (
-    <div className="mock-surface overflow-hidden rounded-xl border border-ash-border font-sans">
-      <p className="border-b border-ash-border px-3 py-2 text-xs font-semibold text-driftwood">
+    <div className="mock-surface overflow-hidden rounded-xl border border-graphite font-sans">
+      <p className="border-b border-graphite px-3 py-2 text-xs font-medium text-fog">
         Number
       </p>
-      <div className="flex items-center gap-2 border-b border-ash-border px-3 py-3">
+      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
         <Image src={usFlag} alt="US" className="size-4 rounded-sm" />
-        <span className="flex-1 text-sm text-midnight-ink">+1 2002 908 7457</span>
+        <span className="flex-1 text-sm text-mist">+1 2002 908 7457</span>
         <Badge variant="success">Active</Badge>
       </div>
       {/* This row gets approved on the loop */}
-      <div className="flex items-center gap-2 border-b border-ash-border px-3 py-3">
+      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
         <Image src={spainFlag} alt="ES" className="size-4 rounded-sm" />
         <div className="flex-1">
-          <p className="text-sm font-semibold text-midnight-ink">New ES number</p>
-          <p className="text-xs text-driftwood">Awaiting approval</p>
+          <p className="text-sm font-medium text-paper">New ES number</p>
+          <p className="text-xs text-fog">Awaiting approval</p>
         </div>
         <StatusBadge active={apr} />
       </div>
       {/* This row stays in review */}
-      <div className="flex items-center gap-2 border-b border-ash-border px-3 py-3">
+      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
         <Image src={spainFlag} alt="ES" className="size-4 rounded-sm" />
         <div className="flex-1">
-          <p className="text-sm font-semibold text-midnight-ink">New ES number</p>
-          <p className="text-xs text-driftwood">Awaiting approval</p>
+          <p className="text-sm font-medium text-paper">New ES number</p>
+          <p className="text-xs text-fog">Awaiting approval</p>
         </div>
         <Badge variant="warning">In review</Badge>
       </div>
@@ -188,16 +189,16 @@ function ChatMock({ play }: { play: boolean }) {
     <div className="flex flex-col gap-3 font-sans">
       {/* First message is always on screen so the card never goes empty between
           loops; only the read ticks and the reply cycle. */}
-      <div className="max-w-[75%] self-end rounded-xl rounded-tr-sm bg-coral-muted/30 px-3 py-2">
-        <p className="text-sm text-midnight-ink">Hi</p>
-        <p className="flex items-center justify-end gap-1 text-[10px] text-driftwood">
+      <div className="max-w-[75%] self-end rounded-xl rounded-tr-sm bg-coral/15 px-3 py-2">
+        <p className="text-sm text-paper">Hi</p>
+        <p className="flex items-center justify-end gap-1 text-[10px] text-fog">
           12.00
           <span className="relative inline-flex">
             <motion.span
               animate={{ opacity: read ? 0 : 1 }}
               transition={{ duration: 0.4, ease: EASE }}
             >
-              <CheckCheck className="size-3 text-driftwood" aria-hidden />
+              <CheckCheck className="size-3 text-fog" aria-hidden />
             </motion.span>
             <motion.span
               className="absolute inset-0"
@@ -205,27 +206,27 @@ function ChatMock({ play }: { play: boolean }) {
               animate={{ opacity: read ? 1 : 0 }}
               transition={{ duration: 0.4, ease: EASE }}
             >
-              <CheckCheck className="size-3 text-sky-500" aria-hidden />
+              <CheckCheck className="size-3 text-sky-400" aria-hidden />
             </motion.span>
           </span>
         </p>
       </div>
 
       <motion.div
-        className="mock-surface rounded-xl border border-ash-border p-3 shadow-sm"
+        className="mock-surface rounded-xl border border-graphite p-3"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: showReply ? 1 : 0, y: showReply ? 0 : 8 }}
         transition={{ duration: 0.35, ease: EASE }}
       >
         <div className="mb-2 border-l-2 border-coral pl-2">
-          <p className="text-xs font-semibold text-coral">You</p>
-          <p className="text-xs text-driftwood">Hi</p>
+          <p className="text-xs font-medium text-coral">You</p>
+          <p className="text-xs text-fog">Hi</p>
         </div>
-        <p className="text-sm text-midnight-ink">Hello!</p>
-        <p className="text-sm text-midnight-ink">
+        <p className="text-sm text-bone">Hello!</p>
+        <p className="text-sm text-bone">
           This is a test message to try your flow.
         </p>
-        <p className="mt-1 text-right text-[10px] text-driftwood">12.00</p>
+        <p className="mt-1 text-right text-[10px] text-fog">12.00</p>
       </motion.div>
     </div>
   );
@@ -252,46 +253,69 @@ const STEPS = [
   },
 ];
 
-function StepCard({ step }: { step: (typeof STEPS)[number] }) {
+function StepCard({
+  step,
+  revealStep,
+}: {
+  step: (typeof STEPS)[number];
+  revealStep: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.4 });
   const [hovered, setHovered] = useState(false);
   const play = inView && !hovered;
+  const reveal = useScrollReveal(revealStep);
   const { Mock } = step;
 
   return (
-    <div
+    <motion.div
       ref={ref}
+      {...reveal}
       className="flex flex-col gap-5"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="h-[320px] overflow-hidden rounded-xl border border-ash-border bg-parchment-white p-5">
-        <div className="mock-surface mb-5 flex size-10 items-center justify-center rounded-2xl border border-ash-border font-mono text-lg font-bold text-driftwood">
-          {step.n}
+      {/* UI panel: graphite->carbon fill inside a smoke->void gradient hairline. */}
+      <div className="rounded-xl bg-gradient-to-b from-smoke to-void p-px">
+        <div className="h-[320px] overflow-hidden rounded-[calc(0.75rem-1px)] bg-linear-gradient p-5">
+          {/* Step number, set in the tag token, in its own gradient tile. */}
+          <div className="mb-5 w-fit rounded-xl bg-gradient-to-b from-smoke to-void p-px">
+            <div className="flex size-10 items-center justify-center rounded-[calc(0.75rem-1px)] bg-linear-gradient font-mono text-tag text-mist">
+              {step.n}
+            </div>
+          </div>
+          <Mock play={play} />
         </div>
-        <Mock play={play} />
       </div>
 
-      <h3 className="text-lg font-semibold text-midnight-ink">{step.title}</h3>
-      <p className="text-base text-driftwood">{step.body}</p>
-    </div>
+      <h3 className="text-body-lg font-medium text-paper">{step.title}</h3>
+      <p className="text-body text-fog">{step.body}</p>
+    </motion.div>
   );
 }
 
 export function HowItWorks() {
-  return (
-    <section>
-      <SectionHeading
-        eyebrow="How it works"
-        lead="From zero to first message"
-        tail="in three steps"
-      />
+  const headingReveal = useScrollReveal(0);
 
-      <div className="grid grid-cols-1 gap-5 border-y border-ash-border rule-y p-6 md:grid-cols-3 lg:p-10">
-        {STEPS.map((step) => (
-          <StepCard key={step.n} step={step} />
-        ))}
+  return (
+    <section
+      id="how-it-works"
+      className="scroll-mt-24 px-page py-16 lg:px-page-desktop lg:py-24"
+    >
+      <div className="mx-auto w-full max-w-[1080px]">
+        <motion.div {...headingReveal}>
+          <SectionHeading
+            eyebrow="How it works"
+            lead="From zero to first message"
+            tail="in three steps"
+          />
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-5 px-4 md:grid-cols-3 lg:px-8">
+          {STEPS.map((step, i) => (
+            <StepCard key={step.n} step={step} revealStep={0.5 + i * 0.35} />
+          ))}
+        </div>
       </div>
     </section>
   );

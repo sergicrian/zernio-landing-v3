@@ -1,9 +1,7 @@
-import { Button } from "@/components/ui/button";
-
 /**
- * Centered section header used across the landing: a soft coral eyebrow over a
- * two-tone heading (lead in midnight-ink, tail in driftwood). Mirrors the Why
- * Zernio header so the new sections stay visually consistent.
+ * Centered section header used across the landing: a coral mono eyebrow (tag token)
+ * over a two-tone heading (lead in paper, tail in fog). Matches the Why Zernio
+ * header so the sections stay visually consistent on the dark system.
  */
 export function SectionHeading({
   eyebrow,
@@ -18,19 +16,17 @@ export function SectionHeading({
   stacked?: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center gap-5 px-6 py-10 text-center lg:px-10">
-      <Button variant="soft" size="sm" className="tracking-wider">
-        {eyebrow}
-      </Button>
-      <h2 className="text-2xl font-semibold tracking-tight text-midnight-ink">
+    <div className="flex flex-col items-center gap-4 px-4 pb-12 text-center lg:px-8">
+      <p className="font-mono text-tag tracking-wider text-coral">{eyebrow}</p>
+      <h2 className="text-heading font-medium tracking-tight text-paper">
         {stacked ? (
           <>
             <span className="block">{lead}</span>
-            <span className="block text-driftwood">{tail}</span>
+            <span className="block text-fog">{tail}</span>
           </>
         ) : (
           <>
-            {lead} <span className="text-driftwood">{tail}</span>
+            {lead} <span className="text-fog">{tail}</span>
           </>
         )}
       </h2>

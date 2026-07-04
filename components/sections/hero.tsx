@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
+import { GradientShimmer } from "gradient-shimmer";
 
 import { Button } from "@/components/ui/button";
 import { CodeTypewriter } from "@/components/sections/code-typewriter";
+import { HERO_STEP, useReveal } from "@/components/sections/hero-reveal";
 
 import whatsappGlyph from "@/public/whatsapp-logo.svg";
 
@@ -14,15 +19,55 @@ import whatsappGlyph from "@/public/whatsapp-logo.svg";
  * Coral rule: "Start for free" is the single coral action of the whole view.
  */
 
-// Section anchors (the sections themselves are commented out for now).
+// Section anchors. `id` matches the target element's id (see app/page.tsx). Sections
+// that aren't mounted yet still get a tab — smoothScrollTo() no-ops until the id exists,
+// so they light up automatically as each section is added back.
 const SECTION_TABS = [
-  { label: "Overview", active: true },
-  { label: "Why Zernio" },
-  { label: "How it works" },
-  { label: "Features" },
-  { label: "Code example" },
-  { label: "FAQs" },
+  { label: "Overview", id: "overview", active: true },
+  { label: "Why Zernio", id: "why-zernio" },
+  { label: "How it works", id: "how-it-works" },
+  { label: "Features", id: "features" },
+  { label: "Code example", id: "code-example" },
+  { label: "FAQs", id: "faqs" },
 ];
+
+// Sticky navbar clearance so the section title isn't hidden under the floating pill.
+const NAV_OFFSET = 96;
+
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+/**
+ * Gentle in-page scroll to a section id. Eased (easeInOutCubic) with a distance-scaled
+ * duration for a soft, natural glide rather than the abrupt native jump. Silently no-ops
+ * when the target isn't on the page yet (sections mounted later) and respects
+ * prefers-reduced-motion by snapping instantly.
+ */
+function smoothScrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const targetY = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    window.scrollTo(0, targetY);
+    return;
+  }
+
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  const duration = Math.min(900, Math.max(450, Math.abs(distance) * 0.5));
+  let startTime: number | null = null;
+
+  const step = (now: number) => {
+    if (startTime === null) startTime = now;
+    const progress = Math.min(1, (now - startTime) / duration);
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+    if (progress < 1) requestAnimationFrame(step);
+  };
+
+  requestAnimationFrame(step);
+}
 
 /** Block A: WhatsApp eyebrow + in-page section nav. Pinned near the top of the fold. */
 export function HeroNav() {
@@ -31,7 +76,10 @@ export function HeroNav() {
       {/* px-4/lg:px-8 mirrors the navbar header so the edges line up with the logo
           (left) and CTAs (right) inside the same 1080 box. */}
       <div className="mx-auto w-full max-w-[1080px] px-4 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
+        <motion.div
+          {...useReveal(HERO_STEP.heroNav)}
+          className="flex items-center justify-between gap-4"
+        >
           <span className="shrink-0 font-mono text-tag uppercase tracking-wider text-bone">
             WhatsApp
           </span>
@@ -46,7 +94,11 @@ export function HeroNav() {
               {SECTION_TABS.map((tab) => (
                 <a
                   key={tab.label}
-                  href="#"
+                  href={`#${tab.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollTo(tab.id);
+                  }}
                   className={
                     "shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-label font-medium transition-colors duration-base ease-brand " +
                     (tab.active ? "text-paper" : "text-fog hover:text-paper")
@@ -57,7 +109,7 @@ export function HeroNav() {
               ))}
             </div>
           </nav>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -70,46 +122,65 @@ export function Hero() {
       <div className="mx-auto w-full max-w-[1080px] px-4 lg:px-8">
         <div className="flex flex-col items-center text-center">
           {/* Code panel with the app-icon overlapping its lower (faded) edge.
-              The JSON types itself out, holds, then erases in a loop. */}
-          <div className="w-full max-w-[500px]">
+              The JSON types itself out, holds, then erases in a loop. The icon and
+              terminal reveal as one unit (near-overlapping steps). */}
+          <motion.div
+            {...useReveal(HERO_STEP.terminal)}
+            className="w-full max-w-[500px]"
+          >
             <CodeTypewriter />
-          </div>
-          <div className="relative z-10 -mt-6">
+          </motion.div>
+          <motion.div
+            {...useReveal(HERO_STEP.icon)}
+            className="relative z-10 -mt-6"
+          >
             <WhatsappTile />
-          </div>
+          </motion.div>
 
           {/* Heading. Forced to two lines on desktop; wraps naturally below lg. */}
-          <h1 className="mt-5 max-w-4xl text-4xl font-medium leading-[1.1] tracking-[-0.03em] text-paper sm:text-5xl lg:text-display">
-            Ship WhatsApp integration
+          <motion.h1
+            {...useReveal(HERO_STEP.heading)}
+            className="mt-5 max-w-4xl text-4xl font-medium leading-[1.1] tracking-[-0.03em] text-paper sm:text-5xl lg:text-display"
+          >
+            Ship <GradientShimmer gradient="mint" pauseBetween={3000}>WhatsApp</GradientShimmer> integration
             <br className="hidden lg:block" /> in minutes, not months
-          </h1>
+          </motion.h1>
 
-          <p className="mt-6 max-w-xl text-body text-fog">
+          <motion.p
+            {...useReveal(HERO_STEP.body)}
+            className="mt-6 max-w-xl text-body text-fog"
+          >
             One REST API for WhatsApp Business. No Meta app, no template maze, no
             silent webhook failures.
-          </p>
+          </motion.p>
 
-          {/* Actions: the single coral action + a neutral outline. */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
-            <Button className="rounded-xl">Start for free</Button>
-            <Button
-              variant="outline"
-              className="rounded-xl border-smoke bg-linear-gradient text-paper hover:text-paper hover:brightness-110"
-            >
-              View API Docs
-            </Button>
-          </div>
+          {/* Actions + disclaimer reveal together as one step. */}
+          <motion.div
+            {...useReveal(HERO_STEP.actions)}
+            className="mt-8 flex flex-col items-center"
+          >
+            {/* The single coral action + a neutral outline. */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <Button className="rounded-xl">Start for free</Button>
+              <Button
+                variant="outline"
+                className="rounded-xl border-smoke bg-linear-gradient text-paper hover:text-paper hover:brightness-110"
+              >
+                View API Docs
+              </Button>
+            </div>
 
-          {/* Disclaimer (mono). Not coral: the reference link stays neutral. */}
-          <p className="mt-5 font-mono text-tag leading-7 text-ash">
-            No credit card required <span aria-hidden>•</span>{" "}
-            <a
-              href="#"
-              className="text-mist underline-offset-4 transition-colors duration-base ease-brand hover:text-paper hover:underline"
-            >
-              View WhatsApp API Reference
-            </a>
-          </p>
+            {/* Disclaimer (mono). Not coral: the reference link stays neutral. */}
+            <p className="mt-5 font-mono text-tag leading-7 text-ash">
+              No credit card required <span aria-hidden>•</span>{" "}
+              <a
+                href="#"
+                className="text-mist underline-offset-4 transition-colors duration-base ease-brand hover:text-paper hover:underline"
+              >
+                View WhatsApp API Reference
+              </a>
+            </p>
+          </motion.div>
         </div>
       </div>
     </section>
