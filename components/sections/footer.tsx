@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import zernioLogo from "@/public/zernio-logo.svg";
+import zernioIcon from "@/public/zernio-icon.svg";
 import zernioWordmark from "@/public/zernio-wordmark.svg";
 import soc2 from "@/public/soc2.webp";
 import gdpr from "@/public/gdpr.webp";
@@ -109,7 +109,7 @@ export function Footer() {
         <div className="flex items-stretch justify-between border-b border-ash-border">
           <div className="flex items-center px-6 py-6 lg:px-10">
             {/* -ml compensates the logo's internal left padding so the mark lines up with the columns */}
-            <Image src={zernioLogo} alt="Zernio" className="-ml-[14px] h-9 w-auto" />
+            <Image src={zernioIcon} alt="Zernio" className="h-9 w-auto" />
           </div>
           <div className="flex items-stretch">
             <div className={badgeCell}>
