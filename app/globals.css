@@ -2,52 +2,36 @@
 @config "../tailwind.config.ts";
 
 /*
- * Zernio design system. Color custom properties mirror the canonical palette in
- * design.md. The Tailwind tokens (tailwind.config.ts) resolve to these vars, so a
- * scoped theme can re-map the whole palette without touching a single component.
- *
- * :root = light (default, the main site). `.theme-dark` = the dark variant used
- * by the /dark route. Keep the light values here untouched to avoid regressions.
+ * Zernio design system - dark-first, single theme. These color custom properties are
+ * the canonical palette from design.md; the Tailwind tokens (tailwind.config.ts)
+ * resolve to them, so the whole system is themed from this one block. There is no
+ * light theme and no `.theme-dark` scope: the base theme is dark.
  */
 :root {
-  --coral: #eb3514;
-  --coral-muted: #e09282;
-  --burgundy: #660202;
+  /* Surfaces, canvas up. */
+  --void: #08090a; /* page canvas, full-bleed background */
+  --carbon: #0f1011; /* card / navbar / panel surfaces */
+  --obsidian: #161718; /* elevated surfaces, deeper panels, popovers */
+  /* Borders and dividers. */
+  --graphite: #23252a; /* subtle borders, ghost/outline outlines */
+  --smoke: #383b3f; /* higher-contrast hairlines, section separators */
+  /* Text and icons, dim to bright. */
+  --ash: #62666d; /* attenuated body text, inactive icons, metadata */
+  --fog: #8a8f98; /* tertiary text, placeholders, icon fills */
+  --mist: #d0d6e0; /* secondary headings, button text on dark */
+  --bone: #e5e5e6; /* near-white fills, primary body, button text */
+  --paper: #ffffff; /* primary headings, hero type, max contrast */
+  /* Brand accents. */
+  --coral: #eb3514; /* primary action accent */
+  --coral-muted: #e09282; /* soft coral tints, code strings */
+  --burgundy: #660202; /* depth, secondary emphasis, gradient end */
   --burgundy-muted: #a57070;
-  --midnight-ink: #000000;
-  --driftwood: #777169;
-  --fog: #a59f97;
-  --silver-mist: #b1b0b0;
-  --ash-border: #e5e5e5;
-  --warm-sand: #f5f3f1;
-  --parchment-white: #fdfcfc;
-  --code-string: #660202; /* same deep burgundy as the light terminal today */
-}
-
-/*
- * Dark theme. Warm near-black canvas with a warm-white ink, mirroring the light
- * neutral scale inverted. Brand accents (coral, burgundy) stay saturated so the
- * CTA gradient and badges keep their identity; only neutrals invert. Applied by
- * wrapping the page in `.theme-dark` (see app/dark/page.tsx).
- */
-.theme-dark {
-  --coral: #eb3514; /* brand accent, unchanged from light */
-  --coral-muted: #8a4433;
-  --burgundy: #660202; /* brand, unchanged from light */
-  --burgundy-muted: #8a5a5a;
-  --midnight-ink: #fafafa; /* Marble White — primary text (headings, body, nav) */
-  --driftwood: #a8a8a8; /* Ash — secondary body text, icon fills */
-  --fog: #7d7d7d; /* Fog — tertiary text / placeholders */
-  --silver-mist: #666666; /* Smoke — dividers, nav default, terminal dots, logo fills */
-  --ash-border: #262626; /* subtle hairline on the near-black canvas */
-  --warm-sand: #161616; /* elevated surfaces / cards, barely lifted (Vercel-style) */
-  --parchment-white: #0a0a0a; /* near-black page canvas (Vercel-style) */
-  --code-string: #e0906f; /* legible warm string color on the dark terminal */
+  --code-string: #e09282; /* legible warm string color on the dark terminal */
 }
 
 html {
-  background-color: var(--parchment-white);
-  color: var(--midnight-ink);
+  background-color: var(--void);
+  color: var(--bone);
   /* Geist (sans) is the default typeface via `font-sans`; Menlo (mono) is opted
      into via `font-mono` for technical accents. */
   font-family: var(--font-geist), -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -56,31 +40,143 @@ html {
 
 body {
   min-height: 100%;
-  background-color: var(--parchment-white);
-  color: var(--midnight-ink);
+  background-color: var(--void);
+  color: var(--bone);
 }
 
-/* Dark-theme only: recolor black/monochrome logos (raster or SVG) to a solid
-   white silhouette so they stay visible on the dark canvas. No-op in light. */
-.theme-dark .dark-logo-invert {
-  filter: brightness(0) invert(1);
-}
-
-/* Mock UI panels (how-it-works step cards): white in light so they read as clean
-   product UI, but the elevated surface in dark so they stand out against the
-   near-black canvas the step cards now use. */
+/* Mock UI panels (how-it-works step cards): the elevated surface so they stand out
+   against the near-black canvas. */
 .mock-surface {
-  background-color: var(--parchment-white);
-}
-.theme-dark .mock-surface {
-  background-color: var(--warm-sand);
+  background-color: var(--obsidian);
 }
 
-/* Faint blueprint dot-matrix for empty grid areas (Attio-style). Warm-gray dots
-   (silver-mist) at low opacity so they read as texture, not content. */
+/* Terminal caret (hero code typewriter). A hard step blink — no fade — so it reads
+   like a real terminal cursor. It flickers continuously regardless of the typing
+   state (see components/sections/code-typewriter.tsx). */
+@keyframes terminal-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.terminal-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  background-color: var(--mist);
+  animation: terminal-blink 1.06s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .terminal-caret {
+    animation: none;
+  }
+}
+
+/* --- Hero background layer (see components/sections/hero-background.tsx) --- */
+/* Isolated Void stage: an over-sized (200% of the fold), Void-filled surface centred on
+   the focal point. The media screen-blends against THIS Void, so the light-on-black
+   asset dissolves seamlessly everywhere the media reaches — up behind the navbar and
+   down behind the trust bar. The stage is far taller than the media, and its own top/
+   bottom edges meet the page's identical Void, so no seam is ever visible. width:100%
+   keeps it full-bleed with no horizontal overflow. */
+.hero-bg-stage {
+  position: absolute;
+  left: 50%;
+  top: var(--hero-bg-focus, 38%);
+  width: 100%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  background: var(--void);
+  isolation: isolate;
+}
+/* The media sits centred inside the stage (so its focal point coincides with the stage
+   centre = --hero-bg-focus over the terminal). width:100% is full-bleed with no
+   horizontal overflow and no distortion (aspect preserved); it is taller than the fold
+   and intentionally spills past it, dissolving into the stage Void at its edges. */
+.hero-bg-media {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+/* Which layer shows: the video plays at every width when motion is allowed (including
+   mobile); the static poster only shows under prefers-reduced-motion, where the video
+   never plays. */
+.hero-bg-video {
+  display: none;
+}
+.hero-bg-poster {
+  display: block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-bg-video {
+    display: block;
+  }
+  .hero-bg-poster {
+    display: none;
+  }
+}
+
+/* Calm zone: a radial pool of Void over the centre column (same axis as the media)
+   so the terminal + white heading read comfortably, fading to transparent by the
+   edges so the lateral waves are untouched. */
+.hero-bg-calm {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    52% 64% at 50% 47%,
+    var(--void) 0%,
+    rgba(8, 9, 10, 0.86) 40%,
+    rgba(8, 9, 10, 0) 76%
+  );
+}
+
+/* Hero section-nav on < lg: the tabs overflow past the WhatsApp eyebrow, so the row
+   becomes a horizontal scroller. Hide the scrollbar and fade both edges with a mask so
+   the overflowing tabs read as swipeable (the left fade sits under the WhatsApp label,
+   signalling the hidden items). Reset to a static row at lg, where they all fit. */
+.nav-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 1.5rem,
+    #000 calc(100% - 1.5rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 1.5rem,
+    #000 calc(100% - 1.5rem),
+    transparent 100%
+  );
+}
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .nav-scroll {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+/* Faint blueprint dot-matrix for empty grid areas (Attio-style). Low-opacity graphite
+   dots so they read as texture, not content. */
 .bg-dot-matrix {
   background-image: radial-gradient(
-    rgba(177, 176, 176, 0.5) 1px,
+    rgba(56, 59, 63, 0.6) 1px,
     transparent 1px
   );
   background-size: 22px 22px;
@@ -120,17 +216,17 @@ body {
 .rule-t::before,
 .rule-t::after {
   top: -1px;
-  border-top: 1px dashed var(--ash-border);
+  border-top: 1px dashed var(--graphite);
 }
 .rule-b::before,
 .rule-b::after {
   bottom: -1px;
-  border-bottom: 1px dashed var(--ash-border);
+  border-bottom: 1px dashed var(--graphite);
 }
 .rule-y::before,
 .rule-y::after {
   top: -1px;
   bottom: -1px;
-  border-top: 1px dashed var(--ash-border);
-  border-bottom: 1px dashed var(--ash-border);
+  border-top: 1px dashed var(--graphite);
+  border-bottom: 1px dashed var(--graphite);
 }

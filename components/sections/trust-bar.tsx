@@ -1,71 +1,69 @@
-import { Badge } from "@/components/ui/badge";
-
-import warner from "@/public/WarnerMusicGrouplogo.svg";
-import warner1 from "@/public/WarnerMusicGrouplogo-1.svg";
-import vibiz from "@/public/vibizlogo.svg";
-import remax from "@/public/REMAXlogo.svg";
+import warner from "@/public/WarnerMusicGroup-logo.svg";
+import clickup from "@/public/ClickUp-logo.svg";
+import vibiz from "@/public/vibiz-logo.svg";
+import remax from "@/public/REMAX-logo.svg";
 
 /**
- * Trust bar (Figma 4:613, reworked). A single ruled row: the label lives in its
- * own block on the left, the four logos each get their own block to the right.
- * On mobile the label is a full-width block on top and the logos drop into a 2x2
- * grid below. Logos are drawn with a CSS mask so they take a token color:
- * silver-mist at rest, midnight-ink on cell hover. The vibiz cell keeps the
- * burgundy "Case study" badge.
+ * Trust bar. "Trusted by developers at" label followed by four customer logos.
+ * Every logo ships on the same 148x66 canvas already balanced by design, so a single
+ * cell size renders them consistently. Each is painted with a CSS mask so it takes a
+ * token color (`ash`), monochrome on the dark canvas, and brightens to `mist` on hover.
+ *
+ * Responsive: on mobile/tablet the label sits on top and the logos form a 2x2 grid;
+ * from `lg` up it collapses to a single row spread edge to edge.
  */
-const LOGOS: { src: string; alt: string; badge?: boolean }[] = [
+const LOGOS: { src: string; alt: string }[] = [
   { src: warner.src, alt: "Warner Music Group" },
-  { src: warner1.src, alt: "Warner Music Group" },
-  { src: vibiz.src, alt: "vibiz.ai", badge: true },
+  { src: clickup.src, alt: "ClickUp" },
+  { src: vibiz.src, alt: "vibiz.ai" },
   { src: remax.src, alt: "RE/MAX" },
 ];
 
 export function TrustBar() {
   return (
-    <section className="border-y border-ash-border rule-y">
-      <div className="grid grid-cols-2 sm:grid-cols-5">
-        {/* Label: full-width block on mobile, first column on desktop. */}
-        <div className="col-span-2 flex items-center justify-center border-b border-ash-border px-6 py-8 sm:col-span-1 sm:justify-start sm:border-b-0 sm:border-r sm:py-0">
-          <p className="text-center text-sm font-semibold text-midnight-ink sm:text-left">
-            Trusted by developers at
-          </p>
-        </div>
+    // `relative z-10` lifts the bar above the hero background layer, which bleeds down
+    // from the fold behind it: the fold is a positioned stacking context (painted after
+    // this in-flow section), so without a positive z-index its content would paint over
+    // the bar. This keeps the label + logos legible while the waves show through behind.
+    <section className="relative z-10 px-page pt-10 pb-16 lg:px-page-desktop lg:pb-20">
+      {/* px-4 / lg:px-8 mirrors the hero and navbar so the edges line up inside the
+          same 1080 box. */}
+      <div className="mx-auto w-full max-w-[1080px] px-4 lg:px-8">
+        <div className="flex flex-col items-center gap-y-12 lg:flex-row lg:items-center lg:gap-x-10">
+          <p className="shrink-0 text-label text-ash">Trusted by developers at</p>
 
-        {/* Logo blocks. Interior hairline rails only; the outer rails come from
-            the page's 1080 content box and the section's border-y. */}
-        {LOGOS.map((logo, i) => (
-          <div
-            key={i}
-            className={[
-              "group relative flex h-[104px] items-center justify-center border-ash-border",
-              // Mobile 2-col grid: right rail on the left column (0, 2); bottom
-              // rail under the first logo row (0, 1).
-              i === 0 ? "border-b border-r sm:border-b-0" : "",
-              i === 1 ? "border-b sm:border-b-0 sm:border-r" : "",
-              i === 2 ? "border-r" : "",
-              // Desktop 5-col row: last cell has no right rail (outer rail only).
-              i === 3 ? "sm:border-r-0" : "",
-            ].join(" ")}
-          >
-            {logo.badge ? (
-              <Badge variant="secondary" className="absolute right-3 top-3">
-                Case study
-              </Badge>
-            ) : null}
-            <span
-              role="img"
-              aria-label={logo.alt}
-              className="h-[38px] w-[86px] max-w-full bg-silver-mist transition-colors duration-base group-hover:bg-midnight-ink sm:h-[52px] sm:w-[120px]"
-              style={{
-                maskImage: `url(${logo.src})`,
-                WebkitMaskImage: `url(${logo.src})`,
-                maskRepeat: "no-repeat",
-                maskPosition: "center",
-                maskSize: "contain",
-              }}
-            />
+          {/* Columns step down with width: 2 (mobile) -> 3 (tablet) -> single row of 4
+              (lg). `w-full` below lg overrides the parent's `items-center` shrink so the
+              grid spans the full width and the fluid logos fill their cells. */}
+          <div className="grid w-full grid-cols-2 place-items-center gap-x-12 gap-y-12 md:grid-cols-3 lg:w-auto lg:flex lg:flex-1 lg:items-center lg:justify-between lg:gap-0">
+            {LOGOS.map((logo, i) => (
+              <span
+                key={logo.alt}
+                role="img"
+                aria-label={logo.alt}
+                // Below lg the logos are fluid: each fills its grid cell width (all ship
+                // on the same 148x66 canvas, so aspect-[148/66] + contain sizes them
+                // consistently). From lg up they revert to the fixed size spread in a row.
+                // In the 3-col tablet layout the 4th (last) logo would orphan into the
+                // bottom-left cell, so it is placed in the middle column to read centred.
+                className={
+                  "block aspect-[148/66] w-full bg-ash transition-colors duration-base hover:bg-mist lg:aspect-auto lg:h-14 lg:w-32" +
+                  (i === LOGOS.length - 1 ? " md:col-start-2 lg:col-auto" : "")
+                }
+                style={{
+                  maskImage: `url(${logo.src})`,
+                  WebkitMaskImage: `url(${logo.src})`,
+                  maskRepeat: "no-repeat",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskPosition: "center",
+                  maskSize: "contain",
+                  WebkitMaskSize: "contain",
+                }}
+              />
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

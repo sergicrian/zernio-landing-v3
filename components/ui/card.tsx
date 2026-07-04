@@ -9,8 +9,8 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      // 12px radius card, ash-border hairline, warm-sand fill, subtle elevation.
-      "rounded-xl border border-ash-border bg-warm-sand text-midnight-ink shadow-sm",
+      // 12px radius card, graphite hairline, carbon surface, subtle elevation.
+      "rounded-xl border border-graphite bg-carbon text-bone shadow-sm",
       className,
     )}
     {...props}
@@ -37,7 +37,8 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight text-midnight-ink",
+      // Geist Medium (500) is the heaviest weight in the system, no semibold.
+      "text-body-lg font-medium leading-tight tracking-tight text-paper",
       className,
     )}
     {...props}
@@ -51,7 +52,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-driftwood", className)}
+    className={cn("text-label text-ash", className)}
     {...props}
   />
 ));
