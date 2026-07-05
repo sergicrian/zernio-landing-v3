@@ -274,27 +274,47 @@ export function CodeExample() {
         {/* Liquid-glass toggle, outside the terminal. */}
         <StepToggle active={active} onChange={setActive} />
 
-        {/* Terminal: same gradient stroke + fill as the hero (obsidian->void body,
-            smoke->void border) so the two panels read as one object. */}
-        <div
-          className="mt-8 flex w-full flex-col overflow-hidden rounded-2xl text-left"
-          style={{
-            background:
-              "linear-gradient(var(--obsidian), var(--void)) padding-box, linear-gradient(var(--smoke), var(--void)) border-box",
-            border: "1px solid transparent",
-          }}
-        >
-          <div className="flex items-center gap-3 border-b border-graphite px-5 py-3">
-            <span className="flex gap-2" aria-hidden>
-              <span className="size-3 rounded-full bg-graphite" />
-              <span className="size-3 rounded-full bg-graphite" />
-              <span className="size-3 rounded-full bg-graphite" />
-            </span>
-            <span className="font-mono text-label-sm text-fog">{step.endpoint}</span>
-            <CopyButton text={step.code} className="ml-auto" />
-          </div>
+        {/* Terminal + a very subtle bloom behind it. */}
+        <div className="relative mt-8 w-full">
+          {/* Soft radial glow blooming out around the top of the panel. It has to be
+              taller/wider than the terminal and centred on its top edge — the opaque
+              terminal fill occludes the middle, so the haze only reads where it spills
+              past the edges (mostly upward, into the gap under the toggle). Cool mist
+              tint, low opacity, heavily blurred → a natural light haze, not a shape. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-x-8 -top-16 -z-10 h-64"
+            style={{
+              background:
+                "radial-gradient(60% 100% at 50% 30%, rgba(208,214,224,0.16) 0%, rgba(208,214,224,0) 70%)",
+              filter: "blur(50px)",
+            }}
+          />
 
-          <TypewriterCode code={step.code} />
+          {/* Terminal: same gradient stroke + fill as the hero (obsidian->void body,
+              smoke->void border) so the two panels read as one object. */}
+          <div
+            className="flex w-full flex-col overflow-hidden rounded-2xl text-left"
+            style={{
+              background:
+                "linear-gradient(var(--obsidian), var(--void)) padding-box, linear-gradient(var(--smoke), var(--void)) border-box",
+              border: "1px solid transparent",
+            }}
+          >
+            <div className="flex items-center gap-3 border-b border-graphite px-5 py-3">
+              <span className="flex gap-2" aria-hidden>
+                <span className="size-3 rounded-full bg-graphite" />
+                <span className="size-3 rounded-full bg-graphite" />
+                <span className="size-3 rounded-full bg-graphite" />
+              </span>
+              <span className="font-mono text-label-sm text-fog">
+                {step.endpoint}
+              </span>
+              <CopyButton text={step.code} className="ml-auto" />
+            </div>
+
+            <TypewriterCode code={step.code} />
+          </div>
         </div>
       </motion.div>
     </div>

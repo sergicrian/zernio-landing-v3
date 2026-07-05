@@ -191,7 +191,7 @@ export function Hero() {
  *  gradient + stroke), with the white glyph composited on top. The clip is a square
  *  1080x1080 light loop, so `object-cover` fills the tile with no distortion; the tile's
  *  `overflow-hidden` clips it to the rounded corners. */
-function WhatsappTile() {
+export function WhatsappTile() {
   return (
     <div className="relative flex size-[72px] items-center justify-center overflow-hidden rounded-[25px]">
       {/* Looping video backdrop. muted + playsInline are required for mobile autoplay. */}

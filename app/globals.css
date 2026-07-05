@@ -50,7 +50,7 @@ body {
   background-color: var(--obsidian);
 }
 
-/* 1px smoke->void gradient hairline that leaves the element's interior fully
+/* 1px smoke->carbon gradient hairline that leaves the element's interior fully
    transparent — so frosted panels keep their backdrop-blur and no opaque fill can
    bleed past the rounded corners (unlike a p-px gradient wrapper). The ring is a
    masked ::before that paints only the border band; the element supplies its own
@@ -65,7 +65,7 @@ body {
   z-index: 1;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(to bottom, var(--smoke), var(--void));
+  background: linear-gradient(to bottom, var(--smoke), var(--carbon));
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);

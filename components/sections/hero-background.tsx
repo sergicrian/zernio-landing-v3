@@ -56,7 +56,7 @@ export function HeroBackground() {
           loop
           playsInline
           preload="auto"
-          poster="/hero-background.png"
+          poster="/hero-background.webp"
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
@@ -64,7 +64,7 @@ export function HeroBackground() {
         {/* Static fallback for mobile + reduced-motion. Decorative, so a plain <img>
             (not next/image) full-bleed; alt="" keeps it out of the a11y tree. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/hero-background.png" alt="" className="hero-bg-media hero-bg-poster mix-blend-screen" />
+        <img src="/hero-background.webp" alt="" className="hero-bg-media hero-bg-poster mix-blend-screen" />
       </div>
 
       {/* Calm zone: a Void veil concentrated on the centre column so the terminal and

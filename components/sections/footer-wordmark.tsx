@@ -1,0 +1,93 @@
+"use client";
+
+import { useRef } from "react";
+
+/**
+ * Oversized "zernio" wordmark rendered as an outline (stroke, no fill) with a
+ * cursor-following flashlight, mirroring the reference X.COM treatment.
+ *
+ * Two identical stroked copies of the wordmark are stacked:
+ *  - base: a steady smoke hairline outline, always present;
+ *  - spotlight: the same outline in bright paper, revealed only through a radial
+ *    mask centred on the cursor (--mx/--my), so a halo of the outline lights up in
+ *    paper under the pointer.
+ *
+ * The paths are the zernio-wordmark.svg glyph fills; stroking their contours yields
+ * the double-line outline look. `vectorEffect="non-scaling-stroke"` keeps the
+ * hairline a constant width however wide the mark scales.
+ */
+const PATHS = [
+  "M0 5.60197V11.2251L8.7457 8.92897C9.8356 8.64287 10.8249 9.64707 10.5226 10.7325L8.0838 19.4882H13.6603L14.8159 13.8158C14.9124 13.3424 14.7683 12.8518 14.4311 12.5058L6.9843 4.86297C6.6377 4.50717 6.134 4.35217 5.6473 4.45127L0 5.60197Z",
+  "M19.5698 19.4879V16.688L26.7252 7.18199H20.1575V4.31299H31.046V7.14739L23.9599 16.6188H31.7374V19.4879H19.5698Z",
+  "M39.5324 19.7644C37.2511 19.7644 35.4997 19.0961 34.2782 17.7595C33.0569 16.3999 32.4463 14.4296 32.4463 11.8486C32.4463 9.33668 33.0683 7.41248 34.3127 6.07588C35.5573 4.71618 37.3201 4.03638 39.6017 4.03638C41.7678 4.03638 43.4271 4.76228 44.5793 6.21418C45.7315 7.66598 46.3076 9.77458 46.3076 12.5399V12.6782H36.5943C36.5943 14.1531 36.8592 15.2707 37.3894 16.0312C37.9424 16.7686 38.7258 17.1373 39.7397 17.1373C41.1226 17.1373 41.9982 16.5382 42.367 15.3399L46.1002 15.651C45.0171 18.3933 42.8279 19.7644 39.5324 19.7644ZM39.5324 6.52528C38.6106 6.52528 37.8962 6.84788 37.3894 7.49308C36.9054 8.13838 36.6519 9.03708 36.6288 10.1894H42.5053C42.436 8.96798 42.1365 8.05768 41.6064 7.45858C41.0995 6.83638 40.4082 6.52528 39.5324 6.52528Z",
+  "M47.8528 19.4879V7.87338C47.8528 7.04368 47.8411 6.35238 47.818 5.79928C47.7951 5.24628 47.7721 4.75078 47.749 4.31298H51.4822C51.5053 4.47428 51.5398 4.99278 51.586 5.86848C51.6551 6.72108 51.6896 7.28568 51.6896 7.56228H51.7241C52.1159 6.50218 52.4616 5.75318 52.7611 5.31538C53.0608 4.87748 53.4065 4.55488 53.7983 4.34748C54.213 4.14008 54.7315 4.03638 55.3538 4.03638C55.8606 4.03638 56.2639 4.10558 56.5636 4.24378V7.52768C55.9182 7.38938 55.3652 7.32028 54.9043 7.32028C53.9135 7.32028 53.1415 7.72358 52.5882 8.53018C52.0583 9.31368 51.7934 10.4889 51.7934 12.056V19.4879H47.8528Z",
+  "M67.3864 19.4879V10.9844C67.3864 8.31118 66.4878 6.97458 64.6902 6.97458C63.7456 6.97458 62.9735 7.38938 62.3743 8.21898C61.7982 9.02558 61.5102 10.0741 61.5102 11.3646V19.4879H57.5696V7.73508C57.5696 6.92848 57.5579 6.26018 57.5348 5.73018C57.5119 5.20018 57.4889 4.72778 57.4658 4.31298H61.199C61.2221 4.49728 61.2566 4.98118 61.3028 5.76478C61.3719 6.52528 61.4064 7.05528 61.4064 7.35488H61.4409C61.9711 6.20258 62.6393 5.36148 63.4458 4.83148C64.2524 4.30138 65.2087 4.03638 66.3149 4.03638C67.928 4.03638 69.161 4.53188 70.0137 5.52278C70.8893 6.51368 71.3271 7.96548 71.3271 9.87828V19.4879H67.3864Z",
+  "M73.6182 3.7288V1.3449L77.5588 0V2.384L73.6182 3.7288ZM73.6182 19.4879V5.2095L77.5588 3.8647V19.4879H73.6182Z",
+  "M93.9809 11.8832C93.9809 14.3489 93.2899 16.2847 91.9079 17.6904C90.5479 19.0731 88.6699 19.7644 86.2729 19.7644C83.8993 19.7644 82.0327 19.0731 80.6731 17.6904C79.3364 16.2847 78.6682 14.3489 78.6682 11.8832C78.6682 9.44038 79.3364 7.52768 80.6731 6.14498C82.0327 4.73928 83.9224 4.03638 86.3419 4.03638C88.8079 4.03638 90.6979 4.71618 92.0109 6.07588C93.3249 7.41248 93.9809 9.34818 93.9809 11.8832ZM89.8339 11.8832C89.8339 10.0857 89.5339 8.78358 88.9349 7.97708C88.3589 7.17048 87.5169 6.76718 86.4109 6.76718C84.0149 6.76718 82.8161 8.47248 82.8161 11.8832C82.8161 13.5654 83.1042 14.8559 83.6803 15.7547C84.2799 16.6304 85.1209 17.0682 86.2039 17.0682C88.6229 17.0682 89.8339 15.3399 89.8339 11.8832Z",
+];
+
+function WordmarkSvg({
+  className,
+  style,
+}: {
+  className: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <svg
+      viewBox="0 0 94 19.7869"
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      {PATHS.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          stroke="currentColor"
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+    </svg>
+  );
+}
+
+// Radial flashlight centred on the cursor; opaque near the pointer, transparent by
+// its rim, so the spotlight copy only paints the outline it passes over.
+const spotlightMask =
+  "radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 30%, transparent 72%)";
+
+export function FooterWordmark() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  }
+
+  return (
+    <div
+      ref={ref}
+      onPointerMove={handlePointerMove}
+      className="group relative aspect-[475/100] w-full"
+    >
+      {/* Base outline: a steady smoke hairline. */}
+      <WordmarkSvg className="absolute inset-0 h-full w-full text-smoke" />
+
+      {/* Spotlight outline: bright, revealed only through the cursor-centred mask. */}
+      <WordmarkSvg
+        className="absolute inset-0 h-full w-full text-paper opacity-0 transition-opacity duration-slow ease-brand group-hover:opacity-100"
+        style={{
+          maskImage: spotlightMask,
+          WebkitMaskImage: spotlightMask,
+        }}
+      />
+    </div>
+  );
+}

@@ -1,16 +1,26 @@
 import Image from "next/image";
 
-import zernioIcon from "@/public/zernio-icon.svg";
+import { FooterWordmark } from "@/components/sections/footer-wordmark";
 import zernioWordmark from "@/public/zernio-wordmark.svg";
+import logoRender from "@/public/zerni-logo-render.webp";
 import soc2 from "@/public/soc2.webp";
 import gdpr from "@/public/gdpr.webp";
 
 /**
- * Footer (Figma 29:486). Full-width, light. The content sits in the same centered
- * column as the rest of the page, framed by the line-grid side rails (border-x).
- * Logo + GDPR/SOC 2 badge cells, the link columns, the copyright band, and the
- * large ash-border Zernio wordmark, each separated by hairlines. Columns reflow
- * from 5 across to 3, then 2 on mobile.
+ * Footer (Figma 29:486), rebuilt on the v3 dark system. Sits on the void canvas just
+ * below the final CTA, inside the same 1080 box as every other section so its rails
+ * line up with the panel above.
+ *
+ * The glass "7" logo render (public/zerni-logo-render.webp) is a light-on-black asset
+ * that screen-blends against the void: its dark background dissolves and only the lit
+ * glass remains. It is centred over the column, the footer card overlapping its lower
+ * half — the top of the hook rises free above the card while the rest shows through
+ * the frosted panel.
+ *
+ * The card itself reuses the navbar's glass recipe (carbon/50 fill, white/10 hairline,
+ * backdrop-blur + saturate) so the blurred render reads faintly behind the links. Token
+ * mapping off the old light tokens: mono eyebrows in mist, links in fog → paper on
+ * hover, dividers on white/10, and the oversized wordmark masked to a faint white ghost.
  */
 const COLUMNS: { title: string; links: string[] }[] = [
   {
@@ -95,79 +105,90 @@ const COLUMNS: { title: string; links: string[] }[] = [
   },
 ];
 
-// lg width is 100px so the GDPR|SOC 2 divider lands exactly on the 1080 inner
-// rail descending from the sections above (1280 − 1080 = 200 → 100px per side).
-const badgeCell =
-  "flex w-20 shrink-0 items-center justify-center border-l border-ash-border p-3 lg:w-[100px]";
+const badgeCell = "flex items-center justify-center px-5 py-4";
 
 export function Footer() {
   return (
-    <footer className="px-page lg:px-page-desktop">
-      {/* Content column framed by the grid side rails */}
-      <div className="mx-auto w-full max-w-content border-x border-ash-border">
-        {/* Logo + compliance badge cells */}
-        <div className="flex items-stretch justify-between border-b border-ash-border">
-          <div className="flex items-center px-6 py-6 lg:px-10">
-            {/* -ml compensates the logo's internal left padding so the mark lines up with the columns */}
-            <Image src={zernioIcon} alt="Zernio" className="h-9 w-auto" />
+    <footer className="relative overflow-x-clip pt-[180px] lg:pt-[220px]">
+      {/* Glass "7" render, screen-blended exactly like the hero background stage
+          (see .hero-bg-stage in globals.css): mix-blend-screen does NOT blend against
+          the body's canvas background — it needs an actual Void surface painted right
+          behind it inside an isolated group, or the black backdrop survives as a box.
+          So this wrapper carries its own `bg-void` fill and `isolate`s the group; the
+          render blends against that Void (black → void, glass → lit). The Void box is
+          invisible against the identical page Void, and the band below (z-10) overlaps
+          its lower half. Decorative → no pointer events. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 -top-24 w-[min(600px,90vw)] -translate-x-1/2 isolate bg-void"
+      >
+        <Image
+          src={logoRender}
+          alt=""
+          className="h-auto w-full"
+          style={{ mixBlendMode: "screen" }}
+        />
+      </div>
+
+      {/* Full-bleed glass band — the navbar's frosted recipe stretched edge to edge (no
+          lateral rails, only a top hairline), so the fill reaches the full page width
+          while the render bleeds through the blur behind the links. */}
+      <div className="relative z-10 border-t border-white/10 bg-carbon/50 shadow-[0_-8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150">
+        {/* Content capped at the same 1080 box as every other section */}
+        <div className="mx-auto w-full max-w-[1080px] px-page lg:px-page-desktop">
+          {/* Logo + compliance badge cells */}
+          <div className="flex items-stretch justify-between">
+            <div className="flex items-center py-6">
+              <Image src={zernioWordmark} alt="Zernio" className="h-6 w-auto" />
+            </div>
+            <div className="flex items-stretch">
+              <div className={badgeCell}>
+                <Image src={gdpr} alt="GDPR" className="h-12 w-auto opacity-80" />
+              </div>
+              <div className={badgeCell}>
+                <Image src={soc2} alt="SOC 2" className="h-12 w-auto opacity-80" />
+              </div>
+            </div>
           </div>
-          <div className="flex items-stretch">
-            <div className={badgeCell}>
-              <Image src={gdpr} alt="GDPR" className="h-12 w-auto" />
-            </div>
-            <div className={badgeCell}>
-              <Image src={soc2} alt="SOC 2" className="h-12 w-auto" />
-            </div>
+
+          {/* Link columns */}
+          <div className="grid grid-cols-2 gap-8 py-10 md:grid-cols-3 lg:grid-cols-5">
+            {COLUMNS.map((col) => (
+              <div key={col.title} className="flex flex-col gap-3">
+                <p className="font-mono text-label-xs uppercase tracking-wide text-mist">
+                  {col.title}
+                </p>
+                <ul className="flex flex-col gap-2">
+                  {col.links.map((link) => (
+                    <li key={link}>
+                      <a
+                        href="#"
+                        className="text-label text-fog transition-colors duration-base ease-brand hover:text-paper"
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-        </div>
 
-        {/* Link columns */}
-        <div className="grid grid-cols-2 gap-8 border-b border-ash-border p-6 md:grid-cols-3 lg:grid-cols-5 lg:p-10">
-          {COLUMNS.map((col) => (
-            <div key={col.title} className="flex flex-col gap-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-midnight-ink">
-                {col.title}
-              </p>
-              <ul className="flex flex-col gap-2">
-                {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-driftwood transition-colors hover:text-midnight-ink"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+          {/* Copyright band */}
+          <div className="flex items-center gap-6 py-8">
+            <p className="font-mono text-label-xs text-fog">© 2026 Zernio</p>
+            <a
+              href="#"
+              className="font-mono text-label-xs text-fog transition-colors duration-base ease-brand hover:text-paper"
+            >
+              Cookie settings
+            </a>
+          </div>
 
-        {/* Copyright band */}
-        <div className="flex items-center gap-6 border-b border-ash-border px-6 py-8 lg:px-10">
-          <p className="text-xs text-driftwood">© 2026 Zernio</p>
-          <a
-            href="#"
-            className="text-xs text-driftwood transition-colors hover:text-midnight-ink"
-          >
-            Cookie settings
-          </a>
-        </div>
-
-        {/* Large wordmark, masked to ash-border, full grid width within the 40px margins */}
-        <div className="px-6 py-12 lg:px-10">
-          <span
-            aria-hidden
-            className="block aspect-[475/100] w-full bg-ash-border"
-            style={{
-              maskImage: `url(${zernioWordmark.src})`,
-              WebkitMaskImage: `url(${zernioWordmark.src})`,
-              maskRepeat: "no-repeat",
-              maskPosition: "center",
-              maskSize: "contain",
-            }}
-          />
+          {/* Oversized outlined wordmark with a cursor-following flashlight. */}
+          <div className="py-12">
+            <FooterWordmark />
+          </div>
         </div>
       </div>
     </footer>

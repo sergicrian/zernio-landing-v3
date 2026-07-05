@@ -39,7 +39,7 @@ export function Navbar() {
           <Image
             src={zernioWordmark}
             alt="Zernio"
-            className="h-auto w-[100px]"
+            className="h-auto w-[80px] sm:w-[100px]"
             priority
           />
         </a>

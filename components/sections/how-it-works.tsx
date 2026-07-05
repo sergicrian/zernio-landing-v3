@@ -9,14 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { useScrollReveal } from "@/components/sections/hero-reveal";
 
-import cardImage from "@/public/card-image.png";
-import usFlag from "@/public/usflag.png";
-import spainFlag from "@/public/spainflag.png";
+import cardImage from "@/public/card-image.webp";
+import usFlag from "@/public/usflag.webp";
+import spainFlag from "@/public/spainflag.webp";
 
 /**
  * How it works (Figma 1:486), on the v3 dark system. An asymmetric grid: step 1
  * ("Connect in one click") is a full-width card that pairs a text column with a
- * connection-picker panel over the aurora beam (card-image.png, screen-blended);
+ * connection-picker panel over the aurora beam (card-image.webp, screen-blended);
  * steps 2 and 3 sit below as two equal cards, each with a product micro-UI on a
  * frosted panel over the graphite->void gradient and the step copy beneath. Cards
  * stack to a single column below `lg`, all full width.
@@ -28,8 +28,9 @@ import spainFlag from "@/public/spainflag.png";
  * prefers-reduced-motion each mock shows its static resting state.
  *
  * Token mapping from the Figma variables: Coral/Paper/Mist/Fog/Carbon/Void/
- * Obsidian/Bone/Ash/Graphite map 1:1; Figma "Smoke" reads as our smoke hairline.
- * Card and mock strokes use the `.gradient-ring` smoke->void hairline.
+ * Obsidian/Bone/Ash/Graphite map 1:1. Step cards are borderless (fill gradient
+ * only); the mock UI panels (steps 1 and 2) use the `.gradient-ring`
+ * smoke->carbon hairline.
  */
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
