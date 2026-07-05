@@ -88,6 +88,7 @@ const config: Config = {
         "label-lg": ["1rem", { lineHeight: "1.25rem" }], // 16 / 20
         label: ["0.875rem", { lineHeight: "1.25rem" }], // 14 / 20
         "label-sm": ["0.8125rem", { lineHeight: "1rem" }], // 13 / 16
+        "label-xs": ["0.75rem", { lineHeight: "1rem" }], // 12 / 16 (Figma label/12)
         tag: ["0.875rem", { lineHeight: "1.25rem", fontWeight: "700" }], // 14 / 20, Menlo Bold
       },
 

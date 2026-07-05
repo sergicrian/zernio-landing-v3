@@ -50,6 +50,30 @@ body {
   background-color: var(--obsidian);
 }
 
+/* 1px smoke->void gradient hairline that leaves the element's interior fully
+   transparent — so frosted panels keep their backdrop-blur and no opaque fill can
+   bleed past the rounded corners (unlike a p-px gradient wrapper). The ring is a
+   masked ::before that paints only the border band; the element supplies its own
+   rounding (the ring inherits it) and should clip its content with overflow-hidden. */
+.gradient-ring {
+  position: relative;
+}
+.gradient-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(to bottom, var(--smoke), var(--void));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 /* Terminal caret (hero code typewriter). A hard step blink — no fade — so it reads
    like a real terminal cursor. It flickers continuously regardless of the typing
    state (see components/sections/code-typewriter.tsx). */

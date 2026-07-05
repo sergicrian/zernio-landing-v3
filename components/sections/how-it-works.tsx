@@ -8,24 +8,120 @@ import { motion, useInView, useReducedMotion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { useScrollReveal } from "@/components/sections/hero-reveal";
-import { cn } from "@/libs/design-system/cn";
 
+import cardImage from "@/public/card-image.png";
 import usFlag from "@/public/usflag.png";
 import spainFlag from "@/public/spainflag.png";
 
 /**
- * How it works (Figma 30:1065), on the v3 dark system. Each card runs a subtle
- * looping micro-demo of the real product action (Resend style). Loops only run
- * while the card is in view and the cursor is NOT over it; under
- * prefers-reduced-motion they show a static state. The card UI panels reuse the
- * secondary-surface gradient (graphite->carbon fill inside a smoke->void hairline);
- * the step number is set in the tag token. 3 across on desktop, stacked on mobile.
+ * How it works (Figma 1:486), on the v3 dark system. An asymmetric grid: step 1
+ * ("Connect in one click") is a full-width card that pairs a text column with a
+ * connection-picker panel over the aurora beam (card-image.png, screen-blended);
+ * steps 2 and 3 sit below as two equal cards, each with a product micro-UI on a
+ * frosted panel over the graphite->void gradient and the step copy beneath. Cards
+ * stack to a single column below `lg`, all full width.
+ *
+ * Each mock runs a subtle looping micro-demo of the real product action, on the
+ * design-system tokens (no coral highlight): step 1 fills the recommended option,
+ * step 2 approves the pending number, step 3 lands the incoming reply. Loops only
+ * run while the mock is in view and the cursor is NOT over it; under
+ * prefers-reduced-motion each mock shows its static resting state.
+ *
+ * Token mapping from the Figma variables: Coral/Paper/Mist/Fog/Carbon/Void/
+ * Obsidian/Bone/Ash/Graphite map 1:1; Figma "Smoke" reads as our smoke hairline.
+ * Card and mock strokes use the `.gradient-ring` smoke->void hairline.
  */
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
-/** Card 1: the recommended option selects itself on a slow loop. */
-function NumberSelectorMock({ play }: { play: boolean }) {
+/** Play loops only while the mock is in view and the cursor is not over it. */
+function usePlay(amount = 0.4) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { amount });
+  const [hovered, setHovered] = useState(false);
   const reduce = useReducedMotion();
+  return {
+    ref,
+    reduce,
+    play: inView && !hovered,
+    hoverProps: {
+      onMouseEnter: () => setHovered(true),
+      onMouseLeave: () => setHovered(false),
+    },
+  };
+}
+
+/** Rounded-square step marker: mono numeral in a smoke-hairline tile (no fill). */
+function StepBadge({ n }: { n: number }) {
+  return (
+    <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-smoke font-mono text-tag text-paper">
+      {n}
+    </div>
+  );
+}
+
+/** Numbered heading row + body copy shared by every step. */
+function StepText({
+  n,
+  title,
+  body,
+}: {
+  n: number;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <StepBadge n={n} />
+        <h3 className="text-label-lg font-medium text-paper">{title}</h3>
+      </div>
+      <p className="text-body text-fog">{body}</p>
+    </div>
+  );
+}
+
+/** White icon tile used inside the connection picker (dark glyph on paper). */
+function IconTile({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-paper text-void">
+      {children}
+    </div>
+  );
+}
+
+/** Cross-fades the "In review" (warning) pill to "Active" (success) on `active`. */
+function StatusBadge({ active }: { active: boolean }) {
+  return (
+    <div className="relative inline-flex">
+      <motion.span
+        animate={{ opacity: active ? 0 : 1 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
+        <Badge variant="warning" className="text-label-xs! font-sans! font-medium!">
+          In review
+        </Badge>
+      </motion.span>
+      <motion.span
+        className="absolute inset-0 flex items-center justify-end"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: active ? 1 : 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
+        <Badge variant="success" className="text-label-xs! font-sans! font-medium!">
+          Active
+        </Badge>
+      </motion.span>
+    </div>
+  );
+}
+
+/**
+ * Step 1 mock: the "Get a number" picker. On a slow, asymmetric loop the
+ * recommended option fills in (carbon surface + gradient hairline fade in) and
+ * back out — the design-system equivalent of the old coral selection.
+ */
+function ConnectMock() {
+  const { ref, reduce, play, hoverProps } = usePlay();
   const [selected, setSelected] = useState(false);
 
   useEffect(() => {
@@ -40,73 +136,70 @@ function NumberSelectorMock({ play }: { play: boolean }) {
     return () => clearTimeout(t);
   }, [reduce, play]);
 
-  const sel = reduce ? false : selected;
+  const sel = reduce ? true : selected;
 
   return (
-    <div className="mock-surface flex flex-col gap-2 rounded-xl border border-graphite p-2 font-sans">
-      {/* Color cross-fade via CSS transition on themed tokens; motion can't
-          interpolate CSS vars. */}
-      <div
-        className={cn(
-          "flex gap-3 rounded-lg border p-3 transition-colors duration-500 ease-brand",
-          sel ? "border-coral bg-coral/10" : "border-graphite bg-carbon",
-        )}
-      >
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-graphite text-mist">
-          <Plus className="size-4" aria-hidden />
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-paper">Get a number</span>
-            <Badge variant="success">recommended</Badge>
+    <div
+      ref={ref}
+      {...hoverProps}
+      className="gradient-ring flex w-full flex-col rounded-t-xl bg-carbon/80 p-4 backdrop-blur-2xl"
+    >
+      <div className="flex flex-col">
+        {/* Recommended option: the carbon fill + hairline fade in on selection. */}
+        <div className="relative flex gap-2.5 rounded-lg p-2">
+          {/* `absolute!` beats `.gradient-ring`'s unlayered position:relative, so
+              the fill stays an out-of-flow overlay (no gap, no reflow). */}
+          <motion.div
+            aria-hidden
+            className="gradient-ring absolute! inset-0 rounded-lg bg-carbon"
+            initial={false}
+            animate={{ opacity: sel ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: EASE }}
+          />
+          <div className="relative flex gap-2.5">
+            <IconTile>
+              <Plus className="size-4" aria-hidden />
+            </IconTile>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-paper">Get a number</span>
+                <Badge variant="success" className="text-label-xs! font-sans! font-medium!">
+                  recommended
+                </Badge>
+              </div>
+              <span className="text-xs font-medium text-fog">
+                From $2/mo. Pick a country, we handle setup.
+              </span>
+            </div>
           </div>
-          <span className="text-xs text-fog">
-            From $2/mo. Pick a country, we handle setup.
-          </span>
         </div>
-      </div>
-      <div className="flex gap-3 rounded-lg p-3">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-graphite text-fog">
-          <Hash className="size-4" aria-hidden />
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-paper">
-            Use my own number
-          </span>
-          <span className="text-xs text-fog">
-            Bring your existing phone number. Requires verification during setup.
-          </span>
+        {/* Secondary option, flat. */}
+        <div className="flex gap-2.5 p-2">
+          <IconTile>
+            <Hash className="size-4" aria-hidden />
+          </IconTile>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-paper">
+              Use my own number
+            </span>
+            <span className="text-xs font-medium text-fog">
+              Bring your existing phone number. Requires verification during
+              setup.
+            </span>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-/** Cross-fades a "In review" badge to "Active" (and back) on `active`. */
-function StatusBadge({ active }: { active: boolean }) {
-  return (
-    <div className="relative inline-flex">
-      <motion.span
-        animate={{ opacity: active ? 0 : 1 }}
-        transition={{ duration: 0.5, ease: EASE }}
-      >
-        <Badge variant="warning">In review</Badge>
-      </motion.span>
-      <motion.span
-        className="absolute inset-0 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: active ? 1 : 0 }}
-        transition={{ duration: 0.5, ease: EASE }}
-      >
-        <Badge variant="success">Active</Badge>
-      </motion.span>
-    </div>
-  );
-}
-
-/** Card 2: one number gets approved (In review -> Active) once per loop. */
-function NumberTableMock({ play }: { play: boolean }) {
-  const reduce = useReducedMotion();
+/**
+ * Step 2 mock: a numbers table. On a loop the pending ES row gets approved —
+ * its badge cross-fades In review -> Active and the "Awaiting approval" caption
+ * collapses, so the row matches the active US row above.
+ */
+function NumberTableMock() {
+  const { ref, reduce, play, hoverProps } = usePlay();
   const [approved, setApproved] = useState(false);
 
   useEffect(() => {
@@ -118,41 +211,65 @@ function NumberTableMock({ play }: { play: boolean }) {
   const apr = reduce ? false : approved;
 
   return (
-    <div className="mock-surface overflow-hidden rounded-xl border border-graphite font-sans">
-      <p className="border-b border-graphite px-3 py-2 text-xs font-medium text-fog">
+    <div
+      ref={ref}
+      {...hoverProps}
+      className="gradient-ring overflow-hidden rounded-tl-2xl bg-gradient-to-b from-graphite to-carbon"
+    >
+      <p className="border-b border-graphite p-4 text-xs font-semibold text-fog">
         Number
       </p>
-      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
-        <Image src={usFlag} alt="US" className="size-4 rounded-sm" />
-        <span className="flex-1 text-sm text-mist">+1 2002 908 7457</span>
-        <Badge variant="success">Active</Badge>
-      </div>
-      {/* This row gets approved on the loop */}
-      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
-        <Image src={spainFlag} alt="ES" className="size-4 rounded-sm" />
-        <div className="flex-1">
-          <p className="text-sm font-medium text-paper">New ES number</p>
-          <p className="text-xs text-fog">Awaiting approval</p>
+      <div className="flex flex-col gap-2 py-2">
+        <div className="flex items-center gap-2.5 px-4">
+          <Image src={usFlag} alt="US" className="size-4 rounded-sm" />
+          <span className="flex-1 text-xs font-semibold text-bone">
+            +1 2002 908 7457
+          </span>
+          <Badge variant="success" className="text-label-xs! font-sans! font-medium!">
+            Active
+          </Badge>
         </div>
-        <StatusBadge active={apr} />
-      </div>
-      {/* This row stays in review */}
-      <div className="flex items-center gap-2 border-b border-graphite px-3 py-3">
-        <Image src={spainFlag} alt="ES" className="size-4 rounded-sm" />
-        <div className="flex-1">
-          <p className="text-sm font-medium text-paper">New ES number</p>
-          <p className="text-xs text-fog">Awaiting approval</p>
+        <div className="flex items-center gap-2.5 px-4">
+          <Image src={spainFlag} alt="ES" className="size-4 rounded-sm" />
+          {/* Fixed height so the approval cross-fade never reflows the step copy
+              below. Pending name+caption cross-fades to the approved number. */}
+          <div className="relative h-9 flex-1">
+            <motion.div
+              className="absolute inset-0 flex flex-col justify-center"
+              initial={false}
+              animate={{ opacity: apr ? 0 : 1 }}
+              transition={{ duration: 0.4, ease: EASE }}
+            >
+              <span className="text-xs font-semibold text-bone">New ES number</span>
+              <span className="mt-1 text-xs font-semibold text-ash">
+                Awaiting approval
+              </span>
+            </motion.div>
+            <motion.div
+              className="absolute inset-0 flex items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: apr ? 1 : 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+            >
+              <span className="text-xs font-semibold text-bone">
+                +34 683 38 38 44
+              </span>
+            </motion.div>
+          </div>
+          <StatusBadge active={apr} />
         </div>
-        <Badge variant="warning">In review</Badge>
       </div>
     </div>
   );
 }
 
-/** Card 3: a chat plays out as a real conversation, looping. */
-function ChatMock({ play }: { play: boolean }) {
-  const reduce = useReducedMotion();
-  // phase 0 empty, 1 outgoing Hi, 2 read ticks, 3 reply
+/**
+ * Step 3 mock: an outgoing message is read (ticks cross-fade to blue) and the
+ * incoming reply slides in, on a loop.
+ */
+function ChatMock() {
+  const { ref, reduce, play, hoverProps } = usePlay();
+  // 0: sent, 1: read (blue ticks), 2: reply arrived.
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
@@ -163,42 +280,41 @@ function ChatMock({ play }: { play: boolean }) {
     };
     const p0 = () => {
       setPhase(0);
-      at(p1, 800);
+      at(p1, 900);
     };
     const p1 = () => {
       setPhase(1);
-      at(p2, 600); // quick: Hi read soon after sending
+      at(p2, 700);
     };
     const p2 = () => {
       setPhase(2);
-      at(p3, 500); // quick: reply arrives right after
+      at(p0, 4500);
     };
-    const p3 = () => {
-      setPhase(3);
-      at(p0, 5000); // long hold with both messages static
-    };
-    at(p0, 200);
+    at(p0, 300);
     return () => clearTimeout(t);
   }, [reduce, play]);
 
-  const p = reduce ? 3 : phase;
-  const read = p >= 2;
-  const showReply = p >= 3;
+  const p = reduce ? 2 : phase;
+  const read = p >= 1;
+  const showReply = p >= 2;
 
   return (
-    <div className="flex flex-col gap-3 font-sans">
-      {/* First message is always on screen so the card never goes empty between
-          loops; only the read ticks and the reply cycle. */}
-      <div className="max-w-[75%] self-end rounded-xl rounded-tr-sm bg-coral/15 px-3 py-2">
-        <p className="text-sm text-paper">Hi</p>
-        <p className="flex items-center justify-end gap-1 text-[10px] text-fog">
+    <div
+      ref={ref}
+      {...hoverProps}
+      className="flex flex-col gap-3 px-5 pb-5 pt-2"
+    >
+      {/* Outgoing bubble: paper, blue read ticks, tail on the bottom-right. */}
+      <div className="relative min-w-[92px] max-w-[75%] self-end rounded-2xl rounded-br-sm bg-paper px-3 pb-5 pt-2">
+        <p className="text-sm leading-tight text-void">Hi</p>
+        <span className="absolute bottom-1.5 right-3 flex items-center gap-1 text-label-xs text-void/45">
           12.00
-          <span className="relative inline-flex">
+          <span className="relative inline-flex size-4">
             <motion.span
               animate={{ opacity: read ? 0 : 1 }}
               transition={{ duration: 0.4, ease: EASE }}
             >
-              <CheckCheck className="size-3 text-fog" aria-hidden />
+              <CheckCheck className="size-4 text-void/45" aria-hidden />
             </motion.span>
             <motion.span
               className="absolute inset-0"
@@ -206,117 +322,137 @@ function ChatMock({ play }: { play: boolean }) {
               animate={{ opacity: read ? 1 : 0 }}
               transition={{ duration: 0.4, ease: EASE }}
             >
-              <CheckCheck className="size-3 text-sky-400" aria-hidden />
+              <CheckCheck className="size-4 text-sky-500" aria-hidden />
             </motion.span>
           </span>
-        </p>
+        </span>
+        <span
+          aria-hidden
+          className="absolute -right-1.5 bottom-0 size-3 bg-paper [clip-path:polygon(0_0,0_100%,100%_100%)]"
+        />
       </div>
-
+      {/* Incoming reply: graphite bubble, tail on the bottom-left, slides in. */}
       <motion.div
-        className="mock-surface rounded-xl border border-graphite p-3"
-        initial={{ opacity: 0, y: 8 }}
+        initial={false}
         animate={{ opacity: showReply ? 1 : 0, y: showReply ? 0 : 8 }}
-        transition={{ duration: 0.35, ease: EASE }}
+        transition={{ duration: 0.4, ease: EASE }}
+        className="relative max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-graphite px-3 pb-5 pt-2"
       >
-        <div className="mb-2 border-l-2 border-coral pl-2">
-          <p className="text-xs font-medium text-coral">You</p>
-          <p className="text-xs text-fog">Hi</p>
-        </div>
-        <p className="text-sm text-bone">Hello!</p>
-        <p className="text-sm text-bone">
-          This is a test message to try your flow.
+        <p className="pr-10 text-sm leading-snug text-paper">
+          Hello! This is a test message to try your flow.
         </p>
-        <p className="mt-1 text-right text-[10px] text-fog">12.00</p>
+        <span className="absolute bottom-1.5 right-3 text-label-xs text-ash">
+          12.00
+        </span>
+        <span
+          aria-hidden
+          className="absolute -left-1.5 bottom-0 size-3 bg-graphite [clip-path:polygon(100%_0,100%_100%,0_100%)]"
+        />
       </motion.div>
     </div>
   );
 }
 
-const STEPS = [
-  {
-    n: 1,
-    title: "Connect in one click",
-    body: "Meta Embedded Signup creates the WABA and links your number. No Business Manager, no App Review.",
-    Mock: NumberSelectorMock,
-  },
-  {
-    n: 2,
-    title: "Send your first message",
-    body: "One POST request to send templates, media, or interactive messages. Webhooks deliver replies in a consistent format across all platforms.",
-    Mock: NumberTableMock,
-  },
-  {
-    n: 3,
-    title: "Scale with broadcasts",
-    body: "Bulk send to 100 recipients per request with per-user personalization. Schedule, track delivery and read receipts, cancel before send.",
-    Mock: ChatMock,
-  },
-];
-
+/** Steps 2 and 3: mock on a frosted panel, step copy beneath. Reveals on scroll. */
 function StepCard({
-  step,
+  n,
+  title,
+  body,
   revealStep,
+  children,
 }: {
-  step: (typeof STEPS)[number];
+  n: number;
+  title: string;
+  body: string;
   revealStep: number;
+  children: React.ReactNode;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { amount: 0.4 });
-  const [hovered, setHovered] = useState(false);
-  const play = inView && !hovered;
   const reveal = useScrollReveal(revealStep);
-  const { Mock } = step;
-
   return (
     <motion.div
-      ref={ref}
       {...reveal}
-      className="flex flex-col gap-5"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="flex flex-col overflow-hidden rounded-xl bg-gradient-to-b from-obsidian to-void"
     >
-      {/* UI panel: graphite->carbon fill inside a smoke->void gradient hairline. */}
-      <div className="rounded-xl bg-gradient-to-b from-smoke to-void p-px">
-        <div className="h-[320px] overflow-hidden rounded-[calc(0.75rem-1px)] bg-linear-gradient p-5">
-          {/* Step number, set in the tag token, in its own gradient tile. */}
-          <div className="mb-5 w-fit rounded-xl bg-gradient-to-b from-smoke to-void p-px">
-            <div className="flex size-10 items-center justify-center rounded-[calc(0.75rem-1px)] bg-linear-gradient font-mono text-tag text-mist">
-              {step.n}
-            </div>
-          </div>
-          <Mock play={play} />
-        </div>
+      {/* rounded-t-xl on the frosted panel itself: a backdrop-filter child isn't
+          clipped by the parent's rounded corners in Chromium, so it must round its
+          own top corners to match the card. */}
+      <div className="rounded-t-xl bg-carbon/60 pl-5 pt-5 backdrop-blur-2xl">
+        {children}
       </div>
-
-      <h3 className="text-body-lg font-medium text-paper">{step.title}</h3>
-      <p className="text-body text-fog">{step.body}</p>
+      <div className="p-5">
+        <StepText n={n} title={title} body={body} />
+      </div>
     </motion.div>
   );
 }
 
 export function HowItWorks() {
   const headingReveal = useScrollReveal(0);
+  const step1Reveal = useScrollReveal(0.5);
 
   return (
-    <section
-      id="how-it-works"
-      className="scroll-mt-24 px-page py-16 lg:px-page-desktop lg:py-24"
-    >
-      <div className="mx-auto w-full max-w-[1080px]">
-        <motion.div {...headingReveal}>
-          <SectionHeading
-            eyebrow="How it works"
-            lead="From zero to first message"
-            tail="in three steps"
-          />
+    <div id="how-it-works" className="scroll-mt-24 pt-12">
+      <motion.div {...headingReveal}>
+        <SectionHeading
+          eyebrow="How it works"
+          lead="From zero to first message"
+          tail="in three steps"
+        />
+      </motion.div>
+
+      <div className="flex flex-col gap-5 px-4 pb-12 lg:px-8">
+        {/* Step 1: text column + connection picker over the aurora beam. */}
+        <motion.div
+          {...step1Reveal}
+          className="relative flex flex-col items-stretch gap-5 overflow-hidden rounded-xl pt-4 lg:flex-row"
+        >
+          {/* Isolated group so the screen-blended beam composes against the
+              graphite->void gradient rather than the page. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 isolate z-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-l from-obsidian to-void" />
+            <Image
+              src={cardImage}
+              alt=""
+              fill
+              sizes="1080px"
+              className="object-cover object-[right_28%] mix-blend-screen lg:object-right"
+            />
+          </div>
+          <div className="relative z-10 flex flex-1 flex-col justify-start gap-5 px-5 pb-5 pt-3 lg:pb-3">
+            <StepText
+              n={1}
+              title="Connect in one click"
+              body="Meta Embedded Signup creates the WABA and links your number. No Business Manager, no App Review."
+            />
+          </div>
+          <div className="relative z-10 flex flex-1 items-end px-5 lg:pl-5 lg:pr-5">
+            <ConnectMock />
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-5 px-4 md:grid-cols-3 lg:px-8">
-          {STEPS.map((step, i) => (
-            <StepCard key={step.n} step={step} revealStep={0.5 + i * 0.35} />
-          ))}
+        {/* Steps 2 and 3. */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <StepCard
+            n={2}
+            title="Send your first message"
+            body="One POST request to send templates, media, or interactive messages. Webhooks deliver replies in a consistent format across all platforms."
+            revealStep={1}
+          >
+            <NumberTableMock />
+          </StepCard>
+          <StepCard
+            n={3}
+            title="Scale with broadcasts"
+            body="Bulk send to 100 recipients per request with per-user personalization. Schedule, track delivery and read receipts, cancel before send."
+            revealStep={1.5}
+          >
+            <ChatMock />
+          </StepCard>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

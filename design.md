@@ -110,6 +110,7 @@ Size scale (px, line-height baked into each token):
 | `label-lg` | 16px | 20px        | Button and control labels, tight 16px. |
 | `label`    | 14px | 20px        | Secondary labels, dense UI text. |
 | `label-sm` | 13px | 16px        | Small labels, captions. |
+| `label-xs` | 12px | 16px        | Micro labels: status pills, dense UI chips. |
 | `tag`      | 14px | 20px        | Eyebrows, badges, tags (Menlo Bold, weight baked into the token). |
 
 Reach for these named tokens (`text-display`, `text-heading`, `text-body`, ...) over

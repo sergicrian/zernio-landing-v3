@@ -22,7 +22,7 @@ const buttonVariants = cva(
       size: {
         // height / radius / padding-x / text from design.md Components table
         sm: "h-8 rounded-md px-3 text-tag", // 32px / 6px / 12px / 12px
-        md: "h-10 rounded-lg px-4 text-label", // 40px / 8px / 16px / 14px
+        md: "h-10 rounded-lg px-4 text-label-lg", // 40px / 8px / 16px / 16px
         lg: "h-12 rounded-lg px-6 text-label-lg", // 48px / 8px / 24px / 16px
         xl: "h-14 rounded-xl px-8 text-label-lg", // 56px / 12px / 32px / 16px
         icon: "h-10 w-10 rounded-lg", // 40x40px / 8px
