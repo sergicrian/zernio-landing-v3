@@ -32,8 +32,26 @@ export function Navbar() {
     <div className="sticky top-0 z-50 px-page pt-4 lg:px-page-desktop">
       <motion.header
         {...useReveal(HERO_STEP.navbar)}
-        className="mx-auto flex w-full max-w-[1080px] items-center gap-4 rounded-xl border border-white/10 bg-carbon/50 px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 lg:px-8"
+        className="group relative mx-auto flex w-full max-w-[1080px] items-center gap-4 rounded-xl border border-white/10 bg-carbon/50 px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150 lg:px-8"
       >
+        {/* Illuminated stroke: hovering the Dashboard CTA lights up the navbar's
+            bottom edge with a small white gradient below the button, as if it
+            were glowing. A 1px gradient border is drawn via the mask-composite
+            trick. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-base ease-brand group-has-[[data-nav-cta]:hover]:opacity-100"
+          style={{
+            padding: "1px",
+            background:
+              "radial-gradient(28% 100% at 82% 100%, rgba(255,255,255,0.85), rgba(255,255,255,0) 70%)",
+            WebkitMask:
+              "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+
         {/* Logo (coral wordmark). */}
         <a href="#" className="flex shrink-0 items-center" aria-label="Zernio home">
           <Image
@@ -64,8 +82,9 @@ export function Navbar() {
           </a>
           {/* Secondary gradient button. */}
           <Button
-            variant="outline"
-            className="hidden rounded-xl border-smoke bg-linear-gradient text-paper hover:text-paper hover:brightness-110 sm:inline-flex"
+            variant="secondary"
+            data-nav-cta
+            className="hidden rounded-xl sm:inline-flex"
           >
             Dashboard
           </Button>

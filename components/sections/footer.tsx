@@ -1,10 +1,7 @@
 import Image from "next/image";
 
 import { FooterWordmark } from "@/components/sections/footer-wordmark";
-import zernioWordmark from "@/public/zernio-wordmark.svg";
 import logoRender from "@/public/zerni-logo-render.webp";
-import soc2 from "@/public/soc2.webp";
-import gdpr from "@/public/gdpr.webp";
 
 /**
  * Footer (Figma 29:486), rebuilt on the v3 dark system. Sits on the void canvas just
@@ -105,8 +102,6 @@ const COLUMNS: { title: string; links: string[] }[] = [
   },
 ];
 
-const badgeCell = "flex items-center justify-center px-5 py-4";
-
 export function Footer() {
   return (
     <footer className="relative overflow-x-clip pt-[180px] lg:pt-[220px]">
@@ -136,23 +131,8 @@ export function Footer() {
       <div className="relative z-10 border-t border-white/10 bg-carbon/50 shadow-[0_-8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150">
         {/* Content capped at the same 1080 box as every other section */}
         <div className="mx-auto w-full max-w-[1080px] px-page lg:px-page-desktop">
-          {/* Logo + compliance badge cells */}
-          <div className="flex items-stretch justify-between">
-            <div className="flex items-center py-6">
-              <Image src={zernioWordmark} alt="Zernio" className="h-6 w-auto" />
-            </div>
-            <div className="flex items-stretch">
-              <div className={badgeCell}>
-                <Image src={gdpr} alt="GDPR" className="h-12 w-auto opacity-80" />
-              </div>
-              <div className={badgeCell}>
-                <Image src={soc2} alt="SOC 2" className="h-12 w-auto opacity-80" />
-              </div>
-            </div>
-          </div>
-
           {/* Link columns */}
-          <div className="grid grid-cols-2 gap-8 py-10 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-8 pb-10 pt-12 md:grid-cols-3 lg:grid-cols-5">
             {COLUMNS.map((col) => (
               <div key={col.title} className="flex flex-col gap-3">
                 <p className="font-mono text-label-xs uppercase tracking-wide text-mist">

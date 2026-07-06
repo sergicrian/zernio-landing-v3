@@ -10,8 +10,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-coral text-paper hover:bg-coral/90",
-        secondary: "bg-burgundy text-paper hover:bg-burgundy/90",
+        default: "bg-coral text-paper hover:bg-coral/80",
+        // Gradient surface (smoke->carbon) with a smoke hairline. Hover flips to a
+        // paper fill with void text and a soft white glow.
+        secondary:
+          "border border-smoke bg-linear-gradient text-paper transition-all hover:border-paper hover:bg-none hover:bg-paper hover:text-void hover:shadow-[0_0_16px_rgba(255,255,255,0.35)]",
         soft: "bg-coral/10 text-coral hover:bg-coral/15",
         outline:
           "border border-graphite bg-transparent text-bone hover:bg-obsidian hover:text-paper",

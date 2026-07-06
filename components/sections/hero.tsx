@@ -162,10 +162,7 @@ export function Hero() {
             {/* The single coral action + a neutral outline. */}
             <div className="flex flex-wrap items-center justify-center gap-2.5">
               <Button className="rounded-xl">Start for free</Button>
-              <Button
-                variant="outline"
-                className="rounded-xl border-smoke bg-linear-gradient text-paper hover:text-paper hover:brightness-110"
-              >
+              <Button variant="secondary" className="rounded-xl">
                 View API Docs
               </Button>
             </div>

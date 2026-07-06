@@ -78,8 +78,11 @@ const TESTIMONIALS: Item[] = [PEDRO, LAUTARO];
  * wider soft halo, so it reads like real light on the line rather than a flat segment.
  * The glow breathes on a slow, low-amplitude loop (opacity + scale) so it feels alive
  * without drawing attention; static under prefers-reduced-motion.
+ *
+ * The bright layers cross-fade with the testimonial change (same key/timing as the
+ * quote), so the light dips out and back in on each switch; the base hairline stays.
  */
-function Divider() {
+function Divider({ index }: { index: number }) {
   const reduce = useReducedMotion();
   const breathe = reduce
     ? undefined
@@ -93,18 +96,31 @@ function Divider() {
       };
   return (
     <div aria-hidden className="relative h-px w-full max-w-md">
-      {/* base hairline: smoke fading into the void at both ends */}
+      {/* base hairline: smoke fading into the void at both ends (always present) */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-smoke to-transparent" />
-      {/* brighter mist core over the centre of the line */}
-      <div className="absolute left-1/2 top-0 h-px w-40 -translate-x-1/2 bg-gradient-to-r from-transparent via-mist to-transparent" />
-      {/* the light: a wide soft halo with a tight hot core, gently breathing */}
-      <motion.div
-        {...breathe}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform"
-      >
-        <div className="h-16 w-64 rounded-[50%] bg-[radial-gradient(closest-side,rgba(208,214,224,0.10),transparent)] blur-2xl" />
-        <div className="absolute left-1/2 top-1/2 h-3 w-16 -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(255,255,255,0.5),transparent)] blur-md" />
-      </motion.div>
+
+      {/* bright layers cross-fade in sync with the rotating quote */}
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.4, ease: EASE }}
+          className="absolute inset-0"
+        >
+          {/* brighter mist core over the centre of the line */}
+          <div className="absolute left-1/2 top-0 h-px w-40 -translate-x-1/2 bg-gradient-to-r from-transparent via-mist to-transparent" />
+          {/* the light: a wide soft halo with a tight hot core, gently breathing */}
+          <motion.div
+            {...breathe}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 will-change-transform"
+          >
+            <div className="h-16 w-64 rounded-[50%] bg-[radial-gradient(closest-side,rgba(208,214,224,0.10),transparent)] blur-2xl" />
+            <div className="absolute left-1/2 top-1/2 h-3 w-16 -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(255,255,255,0.5),transparent)] blur-md" />
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
@@ -237,7 +253,7 @@ export function Testimonial() {
 
         {/* Quote column: inset rails on both sides, generous vertical rhythm. */}
         <div className="relative flex flex-1 flex-col items-center px-6 py-16 lg:border-x lg:border-graphite lg:px-10 lg:py-24">
-          <Divider />
+          <Divider index={index} />
 
           {/* Rotating quote. An invisible stack of BOTH testimonials reserves the height
               (max of the two) so the cross-fade never shifts layout; hovering pauses it. */}

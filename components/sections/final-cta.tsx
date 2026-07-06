@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { WhatsappTile } from "@/components/sections/hero";
 import { useScrollReveal } from "@/components/sections/hero-reveal";
+
+import soc2Badge from "@/public/soc2.webp";
+import gdprBadge from "@/public/gdpr.webp";
 
 /**
  * Final CTA (v3 dark). Closing conversion block: the animated WhatsApp app-icon,
@@ -52,12 +56,18 @@ export function FinalCta() {
           className="mt-8 flex flex-wrap items-center justify-center gap-2.5"
         >
           <Button className="rounded-xl">Start for free</Button>
-          <Button
-            variant="outline"
-            className="rounded-xl border-smoke bg-linear-gradient text-paper hover:text-paper hover:brightness-110"
-          >
+          <Button variant="secondary" className="rounded-xl">
             View API Docs
           </Button>
+        </motion.div>
+
+        {/* Compliance badges (SOC 2 + GDPR), side by side under the actions. */}
+        <motion.div
+          {...useScrollReveal(4)}
+          className="mt-10 flex items-center justify-center gap-6"
+        >
+          <Image src={soc2Badge} alt="AICPA SOC 2" className="size-16 w-auto" />
+          <Image src={gdprBadge} alt="GDPR compliant" className="size-16 w-auto" />
         </motion.div>
       </div>
     </section>
